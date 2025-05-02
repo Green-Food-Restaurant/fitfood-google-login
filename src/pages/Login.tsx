@@ -10,9 +10,22 @@ const Login = () => {
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left side - Image and branding */}
       <div className="md:w-1/2 bg-fitfood-light p-6 flex flex-col justify-between bg-food-pattern">
-        <div>
-          <h1 className="text-3xl font-bold text-fitfood-dark mb-2">FitFood</h1>
-          <p className="text-fitfood-dark/80">Nutrição que transforma</p>
+        <div className="bg-white/70 backdrop-blur-sm p-4 rounded-xl shadow-lg inline-block">
+          <div className="flex items-center gap-2">
+            <div className="bg-fitfood-primary rounded-full p-2 shadow-md">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-apple">
+                <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/>
+                <path d="M10 2c1 .5 2 2 2 5"/>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-fitfood-dark mb-0 bg-gradient-to-r from-fitfood-primary to-fitfood-accent bg-clip-text text-transparent">FitFood</h1>
+              <div className="flex items-center">
+                <div className="h-0.5 w-3 bg-fitfood-secondary rounded-full mr-1"></div>
+                <p className="text-fitfood-dark/80 text-sm font-medium italic">Nutrição que transforma</p>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="hidden md:block">
