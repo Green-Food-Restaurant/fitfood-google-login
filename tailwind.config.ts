@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				fitfood: {
+					primary: '#4CAF50',
+					secondary: '#8BC34A',
+					accent: '#FF5722',
+					light: '#F1F8E9',
+					dark: '#33691E'
 				}
 			},
 			borderRadius: {
@@ -70,25 +78,25 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-slow': 'pulse-slow 3s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'food-pattern': "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNGMUY4RTkiIGQ9Ik0zNiAzNGMwIDYuMDc1LTQuOTI1IDExLTExIDExcy0xMS00LjkyNS0xMS0xMSA0LjkyNS0xMSAxMS0xMSAxMSA0LjkyNSAxMSAxMXoiLz48cGF0aCBzdHJva2U9IiNFOEY1RTkiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTQ1IDE1YzAtOC4yODQtNi43MTYtMTUtMTUtMTVDMjEuNzE2IDAgMTUgNi43MTYgMTUgMTVjMCA4LjI4NCA2LjcxNiAxNSAxNSAxNSA4LjI4NCAwIDE1LTYuNzE2IDE1LTE1eiIvPjwvZz48L3N2Zz4=')"
 			}
 		}
 	},
