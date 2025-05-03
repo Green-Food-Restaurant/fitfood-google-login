@@ -2,18 +2,30 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
+import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
 
 const GoogleAuthButton = () => {
-  const handleGoogleLogin = () => {
-    // This is a placeholder for the Google authentication logic
-    // In a real application, you would integrate with Google OAuth here
-    toast.info("Google authentication would happen here. This is a demo.");
-    console.log("Google authentication initiated");
-  };
+  const navigate = useNavigate();
+
+  const login = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      console.log('Login bem-sucedido:', tokenResponse);
+      toast.success("Login realizado com sucesso!");
+      // Normalmente aqui você enviaria o token para seu backend
+      // ou salvaria no localStorage
+      localStorage.setItem('googleToken', tokenResponse.access_token);
+      navigate('/home');
+    },
+    onError: () => {
+      console.log('Falha no login');
+      toast.error("Erro ao fazer login com Google");
+    }
+  });
 
   return (
     <Button 
-      onClick={handleGoogleLogin}
+      onClick={() => login()}
       className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 flex items-center justify-center gap-2 py-6"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
