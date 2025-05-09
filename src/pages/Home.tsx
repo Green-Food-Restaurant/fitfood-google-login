@@ -1,7 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import hero1 from '../assets/hero-food.png';
 import hero2 from '../assets/hero-food.png';
 import { FaAppleAlt, FaCarrot, FaDrumstickBite } from 'react-icons/fa';
+import { CartButton } from '@/components/CartButton';
 
 const Home = () => {
   const images = [hero1, hero2];
@@ -23,11 +25,12 @@ const Home = () => {
             <span className="text-2xl font-bold text-green-600">FitFood</span>
             <span className="ml-2 text-sm text-green-400 italic">Nutrição que transforma</span>
           </div>
-          <nav className="space-x-6">
-            <a href="#" className="hover:text-green-600 transition-colors">Home</a>
-            <a href="#menu" className="hover:text-green-600 transition-colors">Menu</a>
+          <nav className="flex items-center space-x-6">
+            <a href="/home" className="hover:text-green-600 transition-colors">Home</a>
+            <a href="/products" className="hover:text-green-600 transition-colors">Produtos</a>
             <a href="#sobre" className="hover:text-green-600 transition-colors">Sobre</a>
             <a href="#contato" className="hover:text-green-600 transition-colors">Contato</a>
+            <CartButton />
           </nav>
         </div>
       </header>

@@ -1,44 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { getProdutos } from '../services/productsService';
 
-const produtos = [
-  {
-    id: 1,
-    nome: 'Salada Proteica',
-    descricao: 'Mix de folhas, frango grelhado e grão-de-bico.',
-    preco: 24.9,
-    imagem: '/assets/salada-proteica.png',
-    categoria: 'Saladas'
-  },
-  {
-    id: 2,
-    nome: 'Wrap Integral',
-    descricao: 'Wrap recheado com legumes e pasta de tofu.',
-    preco: 19.9,
-    imagem: '/assets/wrap-integral.png',
-    categoria: 'Pratos'
-  },
-  {
-    id: 3,
-    nome: 'Snack Energético',
-    descricao: 'Mix de castanhas, frutas secas e chocolate amargo.',
-    preco: 14.9,
-    imagem: '/assets/snack-energetico.png',
-    categoria: 'Snacks'
-  },
-];
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getProdutos } from '../services/productsService';
+import { Button } from '@/components/ui/button';
+import { CartButton } from '@/components/CartButton';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from 'sonner';
 
 const categorias = ['Todos', 'Pratos', 'Saladas', 'Snacks'];
 const precos = ['Todos', 'Até R$ 15', 'R$ 15 a R$ 20', 'Acima de R$ 20'];
 
 const Products = () => {
-    useEffect(() => {
-        getProdutos().then(data => setProdutos(data)).catch(console.error);
-        }, []);
   const [filtroCategoria, setFiltroCategoria] = useState('Todos');
   const [filtroPreco, setFiltroPreco] = useState('Todos');
   const [produtos, setProdutos] = useState([]);
+  const { addItem } = useCart();
+  const navigate = useNavigate();
     
+  useEffect(() => {
+    getProdutos().then(data => setProdutos(data)).catch(console.error);
+  }, []);
 
   const filtrarProdutos = () => {
     return produtos.filter(produto => {
@@ -53,6 +34,11 @@ const Products = () => {
     });
   };
 
+  const handleAddToCart = (produto) => {
+    addItem(produto, 1);
+    toast.success(`${produto.nome} adicionado ao carrinho!`);
+  };
+
   const produtosFiltrados = filtrarProdutos();
 
   return (
@@ -64,11 +50,12 @@ const Products = () => {
             <span className="text-2xl font-bold text-green-600">FitFood</span>
             <span className="ml-2 text-sm text-green-400 italic">Nutrição que transforma</span>
           </div>
-          <nav className="space-x-6">
+          <nav className="flex items-center space-x-6">
             <a href="/" className="hover:text-green-600 transition-colors">Home</a>
-            <a href="/produtos" className="hover:text-green-600 transition-colors">Produtos</a>
+            <a href="/products" className="hover:text-green-600 transition-colors">Produtos</a>
             <a href="#sobre" className="hover:text-green-600 transition-colors">Sobre</a>
             <a href="#contato" className="hover:text-green-600 transition-colors">Contato</a>
+            <CartButton />
           </nav>
         </div>
       </header>
@@ -125,7 +112,15 @@ const Products = () => {
                 />
                 <h2 className="text-xl font-semibold mb-1">{produto.nome}</h2>
                 <p className="text-sm text-gray-600 mb-2">{produto.descricao}</p>
-                <span className="text-green-600 font-bold">R$ {produto.preco.toFixed(2)}</span>
+                <div className="flex justify-between items-center mt-4">
+                  <span className="text-green-600 font-bold">R$ {produto.preco.toFixed(2)}</span>
+                  <Button 
+                    onClick={() => handleAddToCart(produto)} 
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Adicionar
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
