@@ -1,16 +1,16 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Checkout from "./pages/Checkout";
-import { CartProvider } from "./contexts/CartContext";
+import Cart from "./pages/Cart";
+import { CartProvider } from "react-use-cart";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +25,9 @@ const App = () => (
             <Route path="/" element={<Login />} />
             <Route path="/home" element={<Home />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/produtos" element={<Navigate to="/products" />} />
+            <Route path="/carrinho" element={<Cart />} />
+            <Route path="/cart" element={<Navigate to="/carrinho" />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
