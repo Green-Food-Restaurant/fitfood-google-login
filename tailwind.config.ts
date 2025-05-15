@@ -68,7 +68,7 @@ export default {
     				secondary: '#8BC34A',
     				accent: '#FF5722',
     				light: '#F1F8E9',
-    				dark: '#33691E'
+    				dark: '# '
     			},
     			chart: {
     				'1': 'hsl(var(--chart-1))',

@@ -79,7 +79,6 @@ const Products = () => {
 
   const produtosFiltrados = filtrarProdutos();
 
-  // Variantes de animação
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -118,18 +117,18 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4FDF2] text-gray-800">
+    <div className="flex flex-col min-h-screen bg-[#F4FDF2] dark:bg-gray-900 text-gray-800 dark:text-gray-100">
       <Navbar />
 
       <motion.main 
-        className="px-4 py-12"
+        className="flex-grow px-4 py-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <div className="max-w-6xl mx-auto">
           <motion.h1 
-            className="text-3xl font-bold text-center mb-6"
+            className="text-3xl font-bold text-center mb-6 dark:text-white"
             variants={headerVariants}
             initial="hidden"
             animate="visible"
@@ -160,6 +159,7 @@ const Products = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
+                className="flex justify-center py-20"
               >
                 <LoadingSpinner />
               </motion.div>
@@ -192,7 +192,7 @@ const Products = () => {
             ) : (
               <motion.div 
                 key="empty"
-                className="col-span-full text-center py-12 text-gray-500"
+                className="col-span-full text-center py-12 text-gray-500 dark:text-gray-400"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
@@ -207,6 +207,7 @@ const Products = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.4 }}
+            className="mt-8"
           >
             <Pagination 
               currentPage={page}

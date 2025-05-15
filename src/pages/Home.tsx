@@ -13,9 +13,6 @@ import CTASection from '../components/home/CTASection';
 // Importando assets
 import hero1 from '../assets/hero-food.png';
 import hero2 from '../assets/hero-food2.png';
-import testimonialAvatar1 from '../assets/hero-food.png'; // Substitua com imagens reais
-import testimonialAvatar2 from '../assets/hero-food2.png'; // Substitua com imagens reais
-import { FaAppleAlt, FaCarrot, FaDrumstickBite } from 'react-icons/fa';
 
 const Home = () => {
   // Para animações de scroll
@@ -63,21 +60,21 @@ const Home = () => {
     {
       id: 1,
       name: 'Mariana Silva',
-      avatar: testimonialAvatar1,
+      avatar: hero1,
       rating: 5,
       comment: "As refeições do FitFood mudaram minha rotina completamente! Consigo manter minha dieta mesmo com a correria do dia a dia. Os pratos são deliciosos e me ajudaram a atingir meus objetivos fitness."
     },
     {
       id: 2,
       name: 'Rafael Mendes',
-      avatar: testimonialAvatar2,
+      avatar: hero2,
       rating: 4.8,
       comment: "Como atleta, preciso de uma alimentação balanceada e que atenda às minhas necessidades nutricionais. O FitFood não só cumpre isso, como também surpreende no sabor. Recomendo muito!"
     }
   ];
   
   return (
-    <div className="min-h-screen bg-[#F9FDF7] text-gray-800 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F9FDF7] dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden">
       <Navbar />
       
       <HeroSection scrollYProgress={scrollYProgress} />
