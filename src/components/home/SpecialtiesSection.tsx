@@ -13,7 +13,7 @@ const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ scrollYProgress
   return (
     <motion.section 
       id="especialidades" 
-      className="py-20 bg-white dark:bg-gray-800"
+      className="py-20 bg-white dark:bg-gray-900"
       style={{ y: specialtiesY }}
     >
       <div className="container mx-auto px-6">
@@ -95,7 +95,7 @@ interface SpecialtyCardProps {
 const SpecialtyCard: React.FC<SpecialtyCardProps> = ({ icon, title, description, link, bgColor, delay }) => {
   return (
     <motion.div 
-      className="bg-white dark:bg-gray-700 rounded-2xl shadow-lg hover:shadow-xl overflow-hidden transition-all duration-300 relative group"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl overflow-hidden transition-all duration-300 relative group"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

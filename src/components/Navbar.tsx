@@ -53,15 +53,15 @@ const Navbar = () => {
       <header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled 
-            ? 'bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-lg py-2' 
-            : 'bg-green-800/50 dark:bg-gray-900/70 backdrop-blur-sm py-4'
+            ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg py-2' 
+            : 'bg-green-800/50 dark:bg-gray-900 backdrop-blur-sm py-4'
         }`}
       >
         <div className="container mx-auto flex items-center justify-between px-6">
           {/* Logo */}
           <Link to="/" className="flex items-center group">
             <div className={`flex items-center justify-center rounded-full p-2 ${
-              isScrolled ? 'bg-green-600 dark:bg-green-500' : 'bg-green-500 dark:bg-green-400'
+              isScrolled ? 'bg-green-600 dark:bg-green-600' : 'bg-green-500 dark:bg-green-600'
             } transition-all duration-300 group-hover:scale-105`}>
               <FaLeaf className="text-white text-lg" />
             </div>
@@ -73,8 +73,8 @@ const Navbar = () => {
               </span>
               <span className={`block text-xs italic transition-all duration-300 ${
                 isScrolled 
-                  ? 'text-green-600 dark:text-green-400' 
-                  : 'text-green-200 dark:text-green-300'
+                  ? 'text-green-600 dark:text-green-500' 
+                  : 'text-green-200 dark:text-green-400'
               }`}>
                 Nutrição que transforma
               </span>
@@ -90,18 +90,18 @@ const Navbar = () => {
                 className={`relative py-1 transition-colors duration-300 ${
                   isActive(link.path) 
                     ? isScrolled 
-                      ? 'text-green-600 dark:text-green-400 font-medium' 
+                      ? 'text-green-600 dark:text-green-500 font-medium' 
                       : 'text-white font-medium'
                     : isScrolled 
-                      ? 'text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400' 
-                      : 'text-white/80 dark:text-gray-200 hover:text-white dark:hover:text-white'
+                      ? 'text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-500' 
+                      : 'text-white/80 dark:text-gray-300 hover:text-white dark:hover:text-white'
                 }`}
               >
                 {link.title}
                 {isActive(link.path) && (
                   <motion.div 
                     className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                      isScrolled ? 'bg-green-600 dark:bg-green-400' : 'bg-white dark:bg-green-400'
+                      isScrolled ? 'bg-green-600 dark:bg-green-500' : 'bg-white dark:bg-green-500'
                     }`}
                     layoutId="navbar-indicator"
                     initial={{ opacity: 0 }}
@@ -142,7 +142,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden bg-white dark:bg-gray-800 shadow-lg"
+              className="md:hidden bg-white dark:bg-gray-900 shadow-lg"
             >
               <div className="container mx-auto px-6 py-4">
                 <nav className="flex flex-col space-y-4">
@@ -152,8 +152,8 @@ const Navbar = () => {
                       to={link.path}
                       className={`py-2 px-4 rounded-md ${
                         isActive(link.path)
-                          ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 font-medium'
-                          : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/30'
+                          ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-500 font-medium'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                       }`}
                     >
                       {link.title}

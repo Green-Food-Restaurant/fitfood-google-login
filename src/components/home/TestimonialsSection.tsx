@@ -16,7 +16,7 @@ interface TestimonialsSectionProps {
 
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials }) => {
   return (
-    <section className="py-20 bg-white dark:bg-gray-800">
+    <section className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-6">
         <motion.div 
           className="text-center max-w-3xl mx-auto mb-16"
@@ -35,7 +35,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
-              className="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-600"
+              className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-600"
               initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
