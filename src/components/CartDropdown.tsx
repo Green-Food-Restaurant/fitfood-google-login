@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 
 const CartDropdown = () => {
   const { items, totalItems, cartTotal, emptyCart } = useCart();
-
   if (totalItems === 0) {
     return (
       <div className="relative">
-        <ShoppingCart className="h-6 w-6 text-green-600" />
+        <ShoppingCart className="h-6 w-6 text-green-600 dark:text-green-400" />
       </div>
     );
   }
@@ -19,21 +18,20 @@ const CartDropdown = () => {
     <Popover.Root>
       <Popover.Trigger asChild>
         <button className="relative focus:outline-none" aria-label="Abrir carrinho">
-          <ShoppingCart className="h-6 w-6 text-green-600" />
-          <span className="absolute -top-2 -right-2 bg-green-600 text-white rounded-full text-xs h-5 w-5 flex items-center justify-center">
+          <ShoppingCart className="h-6 w-6 text-green-600 dark:text-green-400" />
+          <span className="absolute -top-2 -right-2 bg-green-600 dark:bg-green-500 text-white rounded-full text-xs h-5 w-5 flex items-center justify-center">
             {totalItems}
           </span>
         </button>
       </Popover.Trigger>
-      
-      <Popover.Portal>
+        <Popover.Portal>
         <Popover.Content 
-          className="bg-white rounded-md shadow-lg z-50 w-72 animate-in fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2" 
+          className="bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 w-72 animate-in fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2" 
           sideOffset={8}
           align="end"
         >
-          <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-sm font-medium">Seu Carrinho ({totalItems})</p>
+          <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-100">Seu Carrinho ({totalItems})</p>
           </div>
           
           <div className="max-h-64 overflow-y-auto py-2">
@@ -42,9 +40,9 @@ const CartDropdown = () => {
                 {items.slice(0, 4).map((item) => (
                   <div 
                     key={item.id} 
-                    className="px-4 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    <div className="w-12 h-12 bg-gray-100 rounded flex-shrink-0 overflow-hidden">
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded flex-shrink-0 overflow-hidden">
                       <img 
                         src={item.image} 
                         alt={item.name} 
@@ -52,10 +50,10 @@ const CartDropdown = () => {
                       />
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-medium truncate">{item.name}</p>
+                      <p className="text-sm font-medium truncate text-gray-800 dark:text-gray-100">{item.name}</p>
                       <div className="flex justify-between">
-                        <span className="text-xs text-gray-500">{item.quantity}x</span>
-                        <span className="text-xs font-medium">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{item.quantity}x</span>
+                        <span className="text-xs font-medium dark:text-gray-300">
                           R$ {(item.price * item.quantity).toFixed(2)}
                         </span>
                       </div>
@@ -64,25 +62,24 @@ const CartDropdown = () => {
                 ))}
                 
                 {items.length > 4 && (
-                  <div className="px-4 py-2 text-xs text-gray-500 text-center">
+                  <div className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 text-center">
                     +{items.length - 4} {items.length - 4 === 1 ? 'item' : 'itens'} adicionais
                   </div>
                 )}
               </>
             ) : (
-              <div className="px-4 py-6 text-center text-gray-500 text-sm">
+              <div className="px-4 py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
                 Seu carrinho está vazio
               </div>
             )}
           </div>
           
-          <div className="px-4 py-3 border-t border-gray-100">
+          <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700">
             <div className="flex justify-between mb-3">
-              <span className="text-sm font-medium">Total:</span>
-              <span className="text-sm font-bold">R$ {cartTotal.toFixed(2)}</span>
+              <span className="text-sm font-medium dark:text-gray-300">Total:</span>
+              <span className="text-sm font-bold dark:text-white">R$ {cartTotal.toFixed(2)}</span>
             </div>
-            
-            <div className="flex gap-2">
+              <div className="flex gap-2">
               <Button 
                 asChild 
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
@@ -92,7 +89,7 @@ const CartDropdown = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-900/30 dark:hover:bg-red-900/30 dark:hover:text-red-300"
                 onClick={() => emptyCart()}
               >
                 Limpar

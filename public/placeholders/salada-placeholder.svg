@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#E8F5E9" rx="10" ry="10"/>
+  <ellipse cx="100" cy="100" rx="70" ry="50" fill="#C8E6C9"/>
+  <path d="M70 90 Q100 120, 130 90" stroke="#66BB6A" stroke-width="4" fill="transparent"/>
+  <path d="M65 80 Q100 110, 135 80" stroke="#43A047" stroke-width="4" fill="transparent"/>
+  <path d="M60 70 Q100 100, 140 70" stroke="#2E7D32" stroke-width="4" fill="transparent"/>
+  <path d="M80 70 Q85 60, 90 70" stroke="#1B5E20" stroke-width="2" fill="transparent"/>
+  <path d="M100 75 Q105 65, 110 75" stroke="#1B5E20" stroke-width="2" fill="transparent"/>
+  <path d="M120 70 Q125 60, 130 70" stroke="#1B5E20" stroke-width="2" fill="transparent"/>
+  <text x="100" y="170" text-anchor="middle" font-family="Arial" font-size="14" fill="#333">Salada</text>
+</svg>

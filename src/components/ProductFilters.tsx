@@ -75,8 +75,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
             {/* Filtro de categoria */}
             <div>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Categoria:</p>
-              <div className="flex flex-wrap gap-2">
-                {categorias.map(categoria => (
+              <div className="flex flex-wrap gap-2">                {categorias.map(categoria => (
                   <button
                     key={categoria}
                     onClick={() => setFiltroCategoria(categoria)}
@@ -87,7 +86,12 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                     }`}
                     aria-pressed={filtroCategoria === categoria}
                   >
-                    {categoria}
+                    {categoria === 'LANCHE' ? 'Lanches' : 
+                     categoria === 'BEBIDA' ? 'Bebidas' : 
+                     categoria === 'SOBREMESA' ? 'Sobremesas' : 
+                     categoria === 'ACOMPANHAMENTO' ? 'Acompanhamentos' : 
+                     categoria === 'SALADAS' ? 'Saladas' : 
+                     categoria}
                   </button>
                 ))}
               </div>
@@ -141,10 +145,16 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
           transition={{ duration: 0.3 }}
         >
           <span className="text-sm text-gray-500 dark:text-gray-400">Filtros ativos:</span>
-          
-          {filtroCategoria !== 'Todos' && (
+            {filtroCategoria !== 'Todos' && (
             <div className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs rounded-full px-3 py-1 flex items-center gap-1">
-              <span>Categoria: {filtroCategoria}</span>
+              <span>Categoria: {
+                filtroCategoria === 'LANCHE' ? 'Lanches' : 
+                filtroCategoria === 'BEBIDA' ? 'Bebidas' : 
+                filtroCategoria === 'SOBREMESA' ? 'Sobremesas' : 
+                filtroCategoria === 'ACOMPANHAMENTO' ? 'Acompanhamentos' : 
+                filtroCategoria === 'SALADAS' ? 'Saladas' : 
+                filtroCategoria
+              }</span>
               <button 
                 onClick={() => setFiltroCategoria('Todos')}
                 className="ml-1 hover:text-red-500 dark:hover:text-red-400"

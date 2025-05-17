@@ -13,8 +13,15 @@ import Cart from "./pages/Cart";
 import Admin from "./pages/Admin";
 import { CartProvider } from "react-use-cart";
 import { ThemeProvider } from "next-themes";
+import { preloadPlaceholders } from "@/utils/placeholders";
 
 const queryClient = new QueryClient();
+
+// Iniciar pré-carregamento de imagens placeholder
+const preloadedImages = preloadPlaceholders();
+
+// Armazenamos as imagens pré-carregadas como uma propriedade global para evitar que sejam coletadas pelo garbage collector
+(window as any).__preloadedPlaceholderImages = preloadedImages;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

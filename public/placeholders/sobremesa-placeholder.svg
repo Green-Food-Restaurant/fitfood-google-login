@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#FCE4EC" rx="10" ry="10"/>
+  <path d="M80 60 C80 50, 120 50, 120 60 L115 100 C115 110, 85 110, 85 100 Z" fill="#F8BBD0"/>
+  <circle cx="100" cy="60" r="25" fill="#F06292"/>
+  <circle cx="100" cy="60" r="20" fill="#880E4F"/>
+  <path d="M85 120 C85 110, 115 110, 115 120" stroke="#F06292" stroke-width="4" stroke-linecap="round"/>
+  <path d="M90 130 L110 130" stroke="#F06292" stroke-width="4" stroke-linecap="round"/>
+  <text x="100" y="170" text-anchor="middle" font-family="Arial" font-size="14" fill="#333">Sobremesa</text>
+</svg>
