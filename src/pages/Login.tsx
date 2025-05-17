@@ -3,10 +3,45 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import GoogleAuthButton from '@/components/GoogleAuthButton';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from '@/components/ThemeToggle';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Função para simular login como admin
+  const simulateAdminLogin = () => {
+    // Salvar role no localStorage
+    localStorage.setItem('userRole', 'ADMIN');
+    
+    toast({
+      title: "Login de Administrador",
+      description: "Você entrou como administrador",
+      variant: "default",
+    });
+    
+    // Redirecionar para a página inicial
+    navigate('/home');
+  };
+
+  // Função para simular login como cliente comum
+  const simulateUserLogin = () => {
+    // Salvar role no localStorage
+    localStorage.setItem('userRole', 'USER');
+    
+    toast({
+      title: "Login de Usuário",
+      description: "Você entrou como cliente",
+      variant: "default",
+    });
+    
+    // Redirecionar para a página inicial
+    navigate('/home');
+  };
+
   // Variantes de animação para elementos da página
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -216,8 +251,7 @@ const Login = () => {
               </CardDescription>
             </CardHeader>
             
-            <CardContent className="space-y-6">
-              <motion.div 
+            <CardContent className="space-y-6">              <motion.div 
                 className="space-y-4"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -229,6 +263,25 @@ const Login = () => {
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     Rápido, seguro e sem senhas adicionais
                   </span>
+                </div>
+
+                {/* Para fins de demonstração - Botões para simular diferentes tipos de login */}
+                <div className="pt-2 space-y-2">
+                  <Button 
+                    onClick={simulateAdminLogin}
+                    variant="outline" 
+                    className="w-full border-green-500 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-900/20"
+                  >
+                    Demonstração: Entrar como Admin
+                  </Button>
+                  
+                  <Button
+                    onClick={simulateUserLogin}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Demonstração: Entrar como Cliente
+                  </Button>
                 </div>
               </motion.div>
               

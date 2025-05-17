@@ -26,12 +26,15 @@ const Navbar = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
-
+  // Verificar se o usuário é admin
+  const isAdmin = localStorage.getItem('userRole') === 'ADMIN';
+  
   const navLinks = [
     { title: 'Home', path: '/' },
     { title: 'Produtos', path: '/produtos' },
     { title: 'Sobre', path: '/#sobre' },
-    { title: 'Contato', path: '/#contato' }
+    { title: 'Contato', path: '/#contato' },
+    ...(isAdmin ? [{ title: 'Admin', path: '/admin' }] : [])
   ];
 
   // Verificar se o link está ativo

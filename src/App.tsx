@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Checkout from "./pages/Checkout";
 import Cart from "./pages/Cart";
+import Admin from "./pages/Admin";
 import { CartProvider } from "react-use-cart";
 import { ThemeProvider } from "next-themes";
 
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/carrinho" element={<Cart />} />
               <Route path="/cart" element={<Navigate to="/carrinho" />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
