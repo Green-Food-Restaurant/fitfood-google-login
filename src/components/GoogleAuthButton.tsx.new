@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
@@ -19,14 +18,16 @@ interface GoogleAuthButtonProps {
 
 const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false }) => {
   const navigate = useNavigate();
-  const { login, loading, error } = useAuth();  const handleLoginSuccess = async (credentialResponse: CredentialResponse): Promise<void> => {
+  const { login, loading, error } = useAuth();
+
+  const handleLoginSuccess = async (credentialResponse: CredentialResponse): Promise<void> => {
     try {
       console.log('Resposta de credenciais recebida');
 
       // Verificar se temos a credencial
       if (!credentialResponse.credential) {
         console.error('Credencial não encontrada na resposta');
-        toast.error('Falha na autenticação. Credencial inválida.');
+        toast.error('Falha na autenticação. Tente novamente.');
         return;
       }
 
@@ -36,32 +37,17 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
         
         // Navegar para a página inicial após login bem-sucedido
         navigate('/home');
-        toast.success(`Login realizado com sucesso! ${rememberMe ? 'Você permanecerá conectado.' : ''}`);
-      } catch (loginError: any) {
+        toast.success('Login realizado com sucesso!');
+      } catch (loginError) {
         console.error('Erro durante o processo de login:', loginError);
-        
-        // Mensagens de erro mais específicas
-        if (loginError?.message?.includes('network')) {
-          toast.error('Erro de conexão. Verifique sua internet e tente novamente.');
-        } else if (loginError?.response?.status === 401) {
-          toast.error('Credenciais inválidas ou expiradas.');
-        } else if (loginError?.response?.status === 403) {
-          toast.error('Você não tem permissão para acessar o sistema.');
-        } else {
-          toast.error('Ocorreu um erro durante o login. Tente novamente.');
-        }
+        toast.error('Ocorreu um erro durante o login. Tente novamente.');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao processar credencial:', error);
-      
-      // Tratar possíveis erros específicos
-      if (error instanceof Error) {
-        toast.error(`Erro: ${error.message}`);
-      } else {
-        toast.error('Falha no processamento da autenticação. Tente novamente.');
-      }
+      toast.error('Falha no processamento da autenticação. Tente novamente.');
     }
   };
+  
   const handleLoginError = (): void => {
     console.error('Login do Google falhou');
     toast.error('Falha na autenticação com o Google. Tente novamente.');

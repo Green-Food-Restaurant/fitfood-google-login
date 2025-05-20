@@ -1,21 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import GoogleAuthButton from '@/components/GoogleAuthButton';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/contexts/AuthContext';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const { isAuthenticated, loading, login } = useAuth();
+  const [rememberMe, setRememberMe] = useState(false);
 
-  // Função para simular login como admin
-  const simulateAdminLogin = () => {
-    // Salvar role no localStorage
-    localStorage.setItem('userRole', 'ADMIN');
+  // Verificar se o usuário já está autenticado, se sim, redirecionar para home
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = location.state?.from?.pathname || '/home';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
+  // Função para simular login como admin (apenas para demonstração)
+  const simulateAdminLogin = async () => {
+    // Mock de um token para teste (apenas para fins de demonstração)
+    const mockToken = generateMockToken(UserRole.ADMIN);
+    await login(mockToken, rememberMe);
     
     toast({
       title: "Login de Administrador",
@@ -23,14 +38,14 @@ const Login = () => {
       variant: "default",
     });
     
-    // Redirecionar para a página inicial
-    navigate('/home');
+    // A navegação agora acontece no useEffect que observa isAuthenticated
   };
 
-  // Função para simular login como cliente comum
-  const simulateUserLogin = () => {
-    // Salvar role no localStorage
-    localStorage.setItem('userRole', 'USER');
+  // Função para simular login como cliente comum (apenas para demonstração)
+  const simulateUserLogin = async () => {
+    // Mock de um token para teste (apenas para fins de demonstração)
+    const mockToken = generateMockToken(UserRole.USER);
+    await login(mockToken, rememberMe);
     
     toast({
       title: "Login de Usuário",
@@ -38,8 +53,21 @@ const Login = () => {
       variant: "default",
     });
     
-    // Redirecionar para a página inicial
-    navigate('/home');
+    // A navegação agora acontece no useEffect que observa isAuthenticated
+  };
+
+  // Gera um token falso para demonstração
+  const generateMockToken = (role: UserRole) => {
+    const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
+    const payload = btoa(JSON.stringify({
+      name: role === UserRole.ADMIN ? 'Admin Demo' : 'Usuário Demo',
+      email: role === UserRole.ADMIN ? 'admin@fitfood.com' : 'user@fitfood.com',
+      picture: 'https://ui-avatars.com/api/?name=' + (role === UserRole.ADMIN ? 'Admin' : 'User'),
+      role: role,
+      exp: Math.floor(Date.now() / 1000) + 3600 // Expira em 1 hora
+    }));
+    
+    return `${header}.${payload}.demo`;
   };
 
   // Variantes de animação para elementos da página
@@ -257,7 +285,21 @@ const Login = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <GoogleAuthButton />
+                <GoogleAuthButton rememberMe={rememberMe} />
+                
+                <div className="flex items-center space-x-2 mt-4">
+                  <Checkbox 
+                    id="rememberMe" 
+                    checked={rememberMe} 
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)} 
+                  />
+                  <Label 
+                    htmlFor="rememberMe" 
+                    className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer"
+                  >
+                    Lembrar-me
+                  </Label>
+                </div>
                 
                 <div className="text-center">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -265,12 +307,20 @@ const Login = () => {
                   </span>
                 </div>
 
+                {loading && (
+                  <div className="my-2 flex justify-center items-center space-x-2">
+                    <div className="w-4 h-4 rounded-full border-2 border-green-500 border-t-transparent animate-spin"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Autenticando...</span>
+                  </div>
+                )}
+
                 {/* Para fins de demonstração - Botões para simular diferentes tipos de login */}
                 <div className="pt-2 space-y-2">
                   <Button 
                     onClick={simulateAdminLogin}
                     variant="outline" 
                     className="w-full border-green-500 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-900/20"
+                    disabled={loading}
                   >
                     Demonstração: Entrar como Admin
                   </Button>
@@ -279,6 +329,7 @@ const Login = () => {
                     onClick={simulateUserLogin}
                     variant="outline"
                     className="w-full"
+                    disabled={loading}
                   >
                     Demonstração: Entrar como Cliente
                   </Button>

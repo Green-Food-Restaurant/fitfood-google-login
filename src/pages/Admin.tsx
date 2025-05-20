@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import AdminHeader from '../components/admin/AdminHeader';
 import ProductsManagement from '../components/admin/ProductsManagement';
@@ -7,37 +6,15 @@ import OrdersManagement from '../components/admin/OrdersManagement';
 import Dashboard from '../components/admin/Dashboard';
 import UsersManagement from '../components/admin/UsersManagement';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 // Tipo para as abas do painel de administração
 type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'settings';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const navigate = useNavigate();
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Verificar se o usuário é administrador
-    // Esta é uma verificação de exemplo. Em uma aplicação real, você verificaria tokens JWT ou roles do usuário
-    const checkAdminStatus = () => {
-      // Simulando uma verificação de administrador
-      const userIsAdmin = localStorage.getItem('userRole') === 'ADMIN';
-      setIsAdmin(userIsAdmin);
-      
-      if (!userIsAdmin) {
-        toast({
-          title: "Acesso Negado",
-          description: "Você não tem permissão para acessar esta página.",
-          variant: "destructive"
-        });
-        navigate('/home');
-      }
-    };
-
-    checkAdminStatus();
-  }, [navigate, toast]);
-
+  const { isAdmin } = useAuth();
   // Renderize o componente apropriado com base na aba ativa
   const renderTabContent = () => {
     switch (activeTab) {

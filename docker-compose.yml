@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Serviço do frontend
+  frontend:
+    image: dalexandrias/fitfood:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    container_name: fitfood-frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - fitfood-network
+    # Se precisar de variáveis de ambiente
+    environment:
+      - NODE_ENV=production
+    # Volumes para desenvolvimento (opcional, comentado por padrão)
+    # volumes:
+    #   - ./src:/app/src
+
+  # Serviço de API mock (opcional, para desenvolvimento)
+  # Descomente se precisar de um servidor de API para testes
+  # api-mock:
+  #   image: stoplight/prism:4
+  #   container_name: fitfood-api-mock
+  #   command: mock -h 0.0.0.0 /api/openapi.yaml
+  #   ports:
+  #     - "4010:4010"
+  #   volumes:
+  #     - ./api:/api
+  #   networks:
+  #     - fitfood-network
+
+networks:
+  fitfood-network:
+    driver: bridge

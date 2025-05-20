@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,101 +9,52 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Badge } from '@/components/ui/badge';
 import { 
   Search, 
-  Filter, 
-  ArrowUpDown, 
+  Pencil,
+  Trash2,
   UserPlus, 
-  UserCheck, 
-  UserMinus,
-  UserX,
-  Mail,
-  Phone,
+  Filter, 
+  ArrowUpDown,
+  Loader2,
+  Upload,
   Calendar,
-  Loader2
+  Mail,
+  UserCheck,
+  UserX,
+  Plus,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
-// Tipo para os usuários
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  role: 'admin' | 'customer';
-  status: 'active' | 'blocked';
-  createdAt: string;
-  orders: number;
-  totalSpent: number;
-  avatar?: string;
-}
-
-// Dados simulados para os usuários
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: 'Ana Silva',
-    email: 'ana.silva@email.com',
-    phone: '(11) 98765-4321',
-    role: 'customer',
-    status: 'active',
-    createdAt: '2024-10-15T14:30:00',
-    orders: 8,
-    totalSpent: 523.45,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ana'
-  },
-  {
-    id: 2,
-    name: 'Lucas Mendes',
-    email: 'lucas.m@email.com',
-    phone: '(11) 91234-5678',
-    role: 'customer',
-    status: 'active',
-    createdAt: '2024-11-22T09:15:00',
-    orders: 5,
-    totalSpent: 289.70,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas'
-  },
-  {
-    id: 3,
-    name: 'Mariana Costa',
-    email: 'mari.costa@email.com',
-    phone: '(11) 99876-5432',
-    role: 'customer',
-    status: 'blocked',
-    createdAt: '2025-01-08T16:45:00',
-    orders: 2,
-    totalSpent: 118.50,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana'
-  },
-  {
-    id: 4,
-    name: 'Rafael Santos',
-    email: 'rafael.s@email.com',
-    phone: '(11) 95555-9876',
-    role: 'admin',
-    status: 'active',
-    createdAt: '2024-09-05T11:20:00',
-    orders: 0,
-    totalSpent: 0,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rafael'
-  },
-  {
-    id: 5,
-    name: 'Camila Oliveira',
-    email: 'camila.o@email.com',
-    phone: '(11) 94444-3333',
-    role: 'customer',
-    status: 'active',
-    createdAt: '2025-02-14T13:50:00',
-    orders: 3,
-    totalSpent: 178.30,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Camila'
-  },
-];
+import { toast } from 'sonner';
+import { 
+  User, 
+  CreateUserDto, 
+  UpdateUserDto, 
+  usersService, 
+  STATUS_OPTIONS, 
+  ROLE_OPTIONS,
+  PaginatedUsers
+} from '@/services/usersService';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const UsersManagement: React.FC = () => {
+  // Estados principais
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -111,24 +62,106 @@ const UsersManagement: React.FC = () => {
   const [openUserDialog, setOpenUserDialog] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [updatingStatusIds, setUpdatingStatusIds] = useState<number[]>([]);
+  // Estado para diálogo de confirmação de alteração de status
+  const [openStatusDialog, setOpenStatusDialog] = useState<boolean>(false);
+  const [userToUpdateStatus, setUserToUpdateStatus] = useState<User | null>(null);
 
-  // Estado simulado para a paginação
+  // Estado de paginação
   const [pagination, setPagination] = useState({
-    page: 0,
-    totalPages: 2,
-    totalItems: 15
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+    totalItems: 0,
+    hasNextPage: false
   });
 
-  // Carregar usuários (simulado)
-  useEffect(() => {
-    // Simular um atraso de carregamento
-    const timer = setTimeout(() => {
-      setUsers(mockUsers);
-      setLoading(false);
-    }, 800);
+  // Estado para formulário
+  const [formData, setFormData] = useState<CreateUserDto | UpdateUserDto>({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    role: { id: 2 }, // default: user
+    status: { id: 1 } // default: active
+  });
+  // Função para carregar usuários
+  const fetchUsers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Construir o filtro baseado nas seleções do usuário
+      let filters = '';
+      if (roleFilter !== 'all') {
+        filters += `role.name||$eq||${roleFilter}`;
+      }
+      if (statusFilter !== 'all') {
+        if (filters) filters += ',';
+        filters += `status.name||$eq||${statusFilter}`;
+      }
+      if (searchTerm) {
+        const searchFilter = `firstName||$cont||${searchTerm},lastName||$cont||${searchTerm},email||$cont||${searchTerm}`;
+        if (filters) filters = `${filters},${searchFilter}`;
+        else filters = searchFilter;
+      }
+      
+      // Log para debug
+      console.log(`Buscando usuários: página=${pagination.page}, limite=${pagination.limit}, filtros=${filters || 'nenhum'}`);
 
-    return () => clearTimeout(timer);
-  }, []);
+      const result = await usersService.getUsers(
+        pagination.page,
+        pagination.limit,
+        filters
+      );
+
+      // Verificar se temos dados válidos
+      if (!result || !result.data) {
+        throw new Error('Resposta inválida do servidor');
+      }
+
+      // Log para confirmar sucesso
+      console.log(`Usuários carregados com sucesso: ${result.data.length} encontrados`);
+
+      setUsers(result.data);
+      setPagination(prev => ({
+        ...prev,
+        hasNextPage: result.hasNextPage || false,
+        totalItems: result.totalItems || result.data.length
+      }));
+    } catch (error: any) {
+      console.error('Erro ao carregar usuários:', error);
+      
+      // Formatar uma mensagem de erro mais detalhada
+      let errorMessage = 'Falha ao carregar usuários. Tente novamente.';
+      
+      if (error.response) {
+        // Erro de resposta do servidor
+        errorMessage = `Erro ${error.response.status}: ${error.response.statusText || 'Falha na resposta do servidor'}`;
+        console.error('Detalhes da resposta de erro:', error.response.data);
+      } else if (error.request) {
+        // Erro de requisição (sem resposta)
+        errorMessage = 'Servidor não respondeu à requisição. Verifique sua conexão.';
+        console.error('Requisição sem resposta:', error.request);
+      } else if (error.message) {
+        // Erro durante a configuração da requisição
+        errorMessage = `Erro: ${error.message}`;
+      }
+      
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Carregar usuários quando os filtros ou paginação mudam
+  useEffect(() => {
+    fetchUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.page, pagination.limit, searchTerm, roleFilter, statusFilter]);
 
   // Função para formatar a data
   const formatDate = (dateString: string) => {
@@ -136,23 +169,21 @@ const UsersManagement: React.FC = () => {
       const date = new Date(dateString);
       return format(date, "dd 'de' MMMM, yyyy", { locale: ptBR });
     } catch (error) {
-      return dateString;
+      return 'Data inválida';
     }
   };
 
   // Função para adicionar um novo usuário
   const handleAddUser = () => {
-    setSelectedUser({
-      id: 0,
-      name: '',
+    setFormData({
       email: '',
-      phone: '',
-      role: 'customer',
-      status: 'active',
-      createdAt: new Date().toISOString(),
-      orders: 0,
-      totalSpent: 0
+      password: '',
+      firstName: '',
+      lastName: '',
+      role: { id: 2 }, // default: user
+      status: { id: 1 } // default: active
     });
+    setPhotoFile(null);
     setIsEditMode(false);
     setOpenUserDialog(true);
   };
@@ -160,60 +191,230 @@ const UsersManagement: React.FC = () => {
   // Função para editar um usuário existente
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
+    setFormData({
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: { id: user.role.id },
+      status: { id: user.status.id }
+    });
+    setPhotoFile(null);
     setIsEditMode(true);
     setOpenUserDialog(true);
   };
 
-  // Função para alterar o status de um usuário
-  const handleToggleUserStatus = (userId: number) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, status: user.status === 'active' ? 'blocked' : 'active' } 
-        : user
-    ));
+  // Função para confirmar exclusão de usuário
+  const handleDeleteConfirm = (user: User) => {
+    setUserToDelete(user);
+    setOpenDeleteDialog(true);
+  };
+  // Função para deletar usuário
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+    
+    setIsSubmitting(true);
+    try {
+      await usersService.deleteUser(userToDelete.id.toString());
+      toast.success('Usuário excluído com sucesso');
+      fetchUsers(); // Recarregar a lista
+    } catch (error: any) {
+      console.error('Erro ao excluir usuário:', error);
+      
+      // Tratamento detalhado do erro
+      let errorMessage = 'Falha ao excluir usuário.';
+      
+      if (error.response) {
+        if (error.response.status === 403) {
+          errorMessage = 'Você não tem permissão para excluir este usuário.';
+        } else if (error.response.status === 409) {
+          errorMessage = 'Este usuário não pode ser excluído pois está vinculado a outros registros.';
+        } else {
+          errorMessage = `Erro ${error.response.status}: ${error.response.statusText || 'Falha ao excluir'}`;
+        }
+      } else if (error.message) {
+        errorMessage = `Erro: ${error.message}`;
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+      setOpenDeleteDialog(false);
+      setUserToDelete(null);
+    }
+  };  // Função para exibir o diálogo de confirmação antes de alternar o status
+  const handleToggleUserStatusConfirm = (user: User) => {
+    setUserToUpdateStatus(user);
+    setOpenStatusDialog(true);
   };
 
-  // Função para submeter o formulário (adicionar/editar usuário)
-  const handleSubmitUser = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Função para alternar o status do usuário (ativo/inativo)
+  const handleToggleUserStatus = async () => {
+    if (!userToUpdateStatus) return;
     
-    if (!selectedUser) return;
+    // Evite múltiplos cliques quando uma atualização já está em andamento
+    if (updatingStatusIds.includes(userToUpdateStatus.id)) {
+      return;
+    }
+
+    try {
+      // Determinar o novo status (inverso do atual)
+      const currentIsActive = userToUpdateStatus.status.name === 'active';
+      const newIsActive = !currentIsActive;
+      const newStatusText = newIsActive ? 'ativo' : 'inativo';
+      
+      // Adicionar o ID do usuário à lista de IDs em atualização
+      setUpdatingStatusIds((prev) => [...prev, userToUpdateStatus.id]);
+      
+      console.log(`Alterando status de ${userToUpdateStatus.firstName} ${userToUpdateStatus.lastName} para ${newStatusText}...`);
+      
+      // Chamar a API para atualizar o status
+      await usersService.updateUserStatus(userToUpdateStatus.id.toString(), newIsActive);
+      
+      // Atualizar o usuário na lista local
+      setUsers(users.map(u => 
+        u.id === userToUpdateStatus.id 
+          ? { 
+              ...u, 
+              status: { 
+                ...u.status, 
+                name: newIsActive ? 'active' : 'inactive', 
+                id: newIsActive ? 1 : 2 
+              } 
+            } 
+          : u
+      ));
+      
+      // Mostrar mensagem de sucesso
+      toast.success(`Status de ${userToUpdateStatus.firstName} ${userToUpdateStatus.lastName} alterado para ${newStatusText}.`);
+    } catch (error: any) {
+      console.error('Erro ao atualizar status do usuário:', error);
+      
+      // Mensagem de erro mais detalhada
+      let errorMessage = 'Erro ao alterar status do usuário.';
+      
+      if (error.response) {
+        if (error.response.status === 403) {
+          errorMessage = 'Você não tem permissão para alterar o status deste usuário.';
+        } else if (error.response.status === 404) {
+          errorMessage = 'Usuário não encontrado. A página será recarregada.';
+          // Recarregar dados em caso de usuário não encontrado
+          setTimeout(() => fetchUsers(), 2000);
+        } else {
+          errorMessage = `Erro ${error.response.status}: ${error.response.statusText || 'Falha ao alterar status'}`;
+        }
+      } else if (error.message) {
+        errorMessage = `Erro: ${error.message}`;
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      // Remover o ID do usuário da lista de IDs em atualização
+      setUpdatingStatusIds((prev) => prev.filter((id) => id !== userToUpdateStatus.id));
+      setOpenStatusDialog(false);
+      setUserToUpdateStatus(null);
+    }
+  };
+
+  // Tratamento de upload de foto
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPhotoFile(e.target.files[0]);
+    }
+  };
+
+  // Função para limpar o input de arquivo
+  const clearPhotoInput = () => {
+    if (photoInputRef.current) {
+      photoInputRef.current.value = '';
+    }
+  };
+  // Função para submeter o formulário (adicionar/editar usuário)
+  const handleSubmitUser = async (e: React.FormEvent) => {
+    e.preventDefault();
     
     setIsSubmitting(true);
     
-    setTimeout(() => {
-      if (isEditMode) {
-        // Atualizar usuário existente
-        setUsers(users.map(user => 
-          user.id === selectedUser.id ? selectedUser : user
-        ));
-      } else {
-        // Adicionar novo usuário
-        const newUser = {
-          ...selectedUser,
-          id: Math.max(...users.map(u => u.id)) + 1,
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedUser.name}`
-        };
-        setUsers([...users, newUser]);
+    try {
+      let photoId: string | undefined;
+      
+      // Upload da foto, se houver
+      if (photoFile) {
+        try {
+          console.log('Enviando foto para upload:', photoFile.name);
+          const uploadResult = await usersService.uploadPhoto(photoFile);
+          photoId = uploadResult.file.id;
+          console.log('Foto enviada com sucesso, ID:', photoId);
+        } catch (uploadError: any) {
+          console.error('Erro no upload da foto:', uploadError);
+          toast.error(`Falha no upload da foto: ${uploadError.message || 'Erro desconhecido'}`);
+          // Continuamos o fluxo mesmo com falha no upload da foto
+        }
       }
       
-      setIsSubmitting(false);
+      // Adicionar ID da foto ao formulário, se houver
+      const userData = {
+        ...formData,
+        ...(photoId ? { photo: { id: photoId } } : {})
+      };
+      
+      console.log(`${isEditMode ? 'Atualizando' : 'Criando'} usuário:`, userData);
+      
+      if (isEditMode && selectedUser) {
+        // Atualizar usuário existente
+        await usersService.updateUser(selectedUser.id.toString(), userData as UpdateUserDto);
+        toast.success('Usuário atualizado com sucesso');
+      } else {
+        // Adicionar novo usuário
+        await usersService.createUser(userData as CreateUserDto);
+        toast.success('Usuário criado com sucesso');
+      }
+      
+      // Recarregar a lista e limpar o formulário
+      fetchUsers();
       setOpenUserDialog(false);
-    }, 1000); // Simulando um delay de API
+      clearPhotoInput();
+      
+    } catch (error: any) {
+      console.error('Erro ao salvar usuário:', error);
+      
+      let errorMessage = 'Falha ao salvar usuário.';
+      
+      if (error.response) {
+        // Mensagens personalizadas para códigos de erro comuns
+        if (error.response.status === 400) {
+          errorMessage = 'Dados inválidos. Verifique se todos os campos estão preenchidos corretamente.';
+          
+          // Se houver detalhes de validação específicos
+          if (error.response.data?.message) {
+            if (typeof error.response.data.message === 'string') {
+              errorMessage += ` ${error.response.data.message}`;
+            } else if (Array.isArray(error.response.data.message)) {
+              errorMessage += ` ${error.response.data.message.join(', ')}`;
+            }
+          }
+        } else if (error.response.status === 409) {
+          errorMessage = 'Já existe um usuário com este e-mail.';
+        } else if (error.response.status === 403) {
+          errorMessage = 'Você não tem permissão para realizar esta operação.';
+        } else {
+          errorMessage = `Erro ${error.response.status}: ${error.response.statusText || 'Falha ao salvar'}`;
+        }
+        
+        console.error('Detalhes da resposta de erro:', error.response.data);
+      } else if (error.message) {
+        errorMessage = `Erro: ${error.message}`;
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // Filtrar usuários pelos termos de busca e filtros
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone.includes(searchTerm);
-      
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    
-    return matchesSearch && matchesRole && matchesStatus;
-  });
+  // Função para mudar página
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  };
 
   return (
     <div className="space-y-6">
@@ -237,7 +438,7 @@ const UsersManagement: React.FC = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input 
-                placeholder="Buscar por nome, email ou telefone..." 
+                placeholder="Buscar por nome ou email..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -252,8 +453,11 @@ const UsersManagement: React.FC = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="all">Todas</SelectItem>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                    <SelectItem value="customer">Cliente</SelectItem>
+                    {ROLE_OPTIONS.map((role) => (
+                      <SelectItem key={role.id} value={role.name}>
+                        {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -265,18 +469,36 @@ const UsersManagement: React.FC = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="active">Ativo</SelectItem>
-                    <SelectItem value="blocked">Bloqueado</SelectItem>
+                    {STATUS_OPTIONS.map((status) => (
+                      <SelectItem key={status.id} value={status.name}>
+                        {status.name === 'active' ? 'Ativo' : 'Inativo'}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
           </div>
-          
-          {/* Tabela de usuários */}
+            {/* Tabela de usuários */}
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <Loader2 className="h-10 w-10 animate-spin text-green-500" />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-64 space-y-4">
+              <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/30 text-red-800 dark:text-red-300 max-w-md text-center">
+                <p className="font-bold mb-1">Erro ao carregar dados</p>
+                <p className="text-sm">{error}</p>
+                <Button 
+                  onClick={() => {
+                    setError(null);
+                    fetchUsers();
+                  }}
+                  className="mt-4 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Tentar Novamente
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -286,40 +508,41 @@ const UsersManagement: React.FC = () => {
                     <TableHead>Usuário</TableHead>
                     <TableHead>Função</TableHead>
                     <TableHead>Cadastro</TableHead>
-                    <TableHead className="text-center">Pedidos</TableHead>
-                    <TableHead className="text-right">Total Gasto</TableHead>
                     <TableHead className="text-center">Status</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
+                  {users.length > 0 ? (
+                    users.map((user) => (
                       <TableRow key={user.id}>
                         <TableCell>
                           <div className="flex items-center space-x-3">
-                            <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
-                              {user.avatar ? (
-                                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                            <Avatar>
+                              {user.photo ? (
+                                <AvatarImage src={user.photo.path} alt={`${user.firstName} ${user.lastName}`} />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  <span className="text-xs">{user.name.charAt(0)}</span>
-                                </div>
+                                <AvatarFallback>
+                                  {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                                </AvatarFallback>
                               )}
-                            </div>
+                            </Avatar>
                             <div>
-                              <p className="font-medium">{user.name}</p>
+                              <p className="font-medium">{user.firstName} {user.lastName}</p>
                               <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {user.provider === 'email' ? 'Cadastro local' : `${user.provider}`}
+                              </p>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={user.role === 'admin' ? 'default' : 'outline'} className={
-                            user.role === 'admin' 
+                          <Badge className={
+                            user.role.name === 'admin' 
                               ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 hover:bg-purple-200' 
                               : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
                           }>
-                            {user.role === 'admin' ? 'Administrador' : 'Cliente'}
+                            {user.role.name.charAt(0).toUpperCase() + user.role.name.slice(1)}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -327,38 +550,60 @@ const UsersManagement: React.FC = () => {
                             <Calendar className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
                             <span className="text-sm">{formatDate(user.createdAt)}</span>
                           </div>
-                        </TableCell>
-                        <TableCell className="text-center">{user.orders}</TableCell>
-                        <TableCell className="text-right font-medium">
-                          {user.totalSpent > 0 ? `R$ ${user.totalSpent.toFixed(2)}` : '-'}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className={
-                            user.status === 'active'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-900'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-900'
-                          }>
-                            {user.status === 'active' ? 'Ativo' : 'Bloqueado'}
+                        </TableCell>                        <TableCell className="text-center">                          <Badge 
+                            className={`
+                              cursor-pointer hover:shadow-md transition-all
+                              ${user.status.name === 'active'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-900 hover:bg-green-200'
+                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-900 hover:bg-red-200'
+                              }
+                              flex items-center justify-center gap-1 px-3 py-1
+                            `}
+                            onClick={() => handleToggleUserStatusConfirm(user)}
+                            title={`Clique para ${user.status.name === 'active' ? 'desativar' : 'ativar'} este usuário`}
+                          >
+                            {updatingStatusIds.includes(user.id) ? (
+                              <>
+                                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                <span>Atualizando...</span>
+                              </>
+                            ) : user.status.name === 'active' 
+                              ? <span className="flex items-center gap-1"><UserCheck className="h-3 w-3 mr-1" /> Ativo</span> 
+                              : <span className="flex items-center gap-1"><UserX className="h-3 w-3 mr-1" /> Inativo</span>
+                            }
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center justify-end space-x-1">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
+                          <div className="flex items-center justify-end space-x-1">                            <Button 
                               onClick={() => handleEditUser(user)}
+                              className="h-8 w-8 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                              title="Editar usuário"
                             >
-                              <UserCheck className="h-4 w-4 text-blue-500" />
+                              <Pencil className="h-4 w-4" />
                             </Button>
+                            
                             <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleToggleUserStatus(user.id)}
+                              onClick={() => handleDeleteConfirm(user)}
+                              className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30"
+                              title="Excluir usuário"
                             >
-                              {user.status === 'active' ? (
-                                <UserX className="h-4 w-4 text-red-500" />
+                              <Trash2 className="h-4 w-4" />
+                            </Button>                            <Button 
+                              onClick={() => handleToggleUserStatusConfirm(user)}
+                              className={`h-8 w-8 p-0 ${
+                                user.status.name === 'active' 
+                                ? 'text-orange-500 hover:text-orange-700 hover:bg-orange-100 dark:hover:bg-orange-900/30' 
+                                : 'text-green-500 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/30'
+                              } ${updatingStatusIds.includes(user.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              title={user.status.name === 'active' ? 'Desativar usuário' : 'Ativar usuário'}
+                              disabled={updatingStatusIds.includes(user.id)}
+                            >
+                              {updatingStatusIds.includes(user.id) ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : user.status.name === 'active' ? (
+                                <UserX className="h-4 w-4" />
                               ) : (
-                                <UserCheck className="h-4 w-4 text-green-500" />
+                                <UserCheck className="h-4 w-4" />
                               )}
                             </Button>
                           </div>
@@ -367,7 +612,7 @@ const UsersManagement: React.FC = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-10 text-gray-500 dark:text-gray-400">
+                      <TableCell colSpan={5} className="text-center py-10 text-gray-500 dark:text-gray-400">
                         Nenhum usuário encontrado
                       </TableCell>
                     </TableRow>
@@ -380,16 +625,46 @@ const UsersManagement: React.FC = () => {
           {/* Paginação */}
           <div className="flex items-center justify-between mt-6">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Mostrando {Math.min(pagination.totalItems, filteredUsers.length)} de {pagination.totalItems} resultados
+              Mostrando {users.length} resultados
             </div>
-            <div className="flex space-x-1">
-              <Button variant="outline" size="sm" disabled={pagination.page === 0}>
-                Anterior
-              </Button>
-              <Button variant="outline" size="sm" disabled={pagination.page >= pagination.totalPages - 1}>
-                Próxima
-              </Button>
-            </div>
+            <Pagination>
+              <PaginationContent>                <PaginationItem>
+                  <span 
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    className={`cursor-pointer flex items-center gap-1 ${pagination.page <= 1 ? 'pointer-events-none opacity-50' : ''}`}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Anterior</span>
+                  </span>
+                </PaginationItem>
+                
+                {/* Página atual */}                <PaginationItem>
+                  <a className="bg-green-100 text-green-800 cursor-default rounded px-3 py-1 font-medium">
+                    {pagination.page}
+                  </a>
+                </PaginationItem>
+                
+                {pagination.hasNextPage && (
+                  <PaginationItem>
+                    <a 
+                      onClick={() => handlePageChange(pagination.page + 1)} 
+                      className="cursor-pointer rounded px-3 py-1 hover:bg-gray-100"
+                    >
+                      {pagination.page + 1}
+                    </a>
+                  </PaginationItem>
+                )}
+                  <PaginationItem>
+                  <span 
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    className={`cursor-pointer flex items-center gap-1 ${!pagination.hasNextPage ? 'pointer-events-none opacity-50' : ''}`}
+                  >
+                    <span>Próxima</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </span>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </CardContent>
       </Card>
@@ -409,16 +684,6 @@ const UsersManagement: React.FC = () => {
           <form onSubmit={handleSubmitUser} className="space-y-4 pt-4">
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo</Label>
-                <Input 
-                  id="name" 
-                  value={selectedUser?.name || ''} 
-                  onChange={(e) => setSelectedUser(prev => prev ? {...prev, name: e.target.value} : null)} 
-                  required 
-                />
-              </div>
-              
-              <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -426,66 +691,117 @@ const UsersManagement: React.FC = () => {
                     id="email" 
                     type="email"
                     className="pl-10"
-                    value={selectedUser?.email || ''} 
-                    onChange={(e) => setSelectedUser(prev => prev ? {...prev, email: e.target.value} : null)} 
+                    value={formData.email as string} 
+                    onChange={(e) => setFormData({...formData, email: e.target.value})} 
+                    required 
+                  />
+                </div>
+              </div>
+              
+              {!isEditMode && (
+                <div className="space-y-2">
+                  <Label htmlFor="password">Senha</Label>
+                  <Input 
+                    id="password" 
+                    type="password"
+                    value={formData.password as string || ''} 
+                    onChange={(e) => setFormData({...formData, password: e.target.value})} 
+                    required={!isEditMode}
+                  />
+                </div>
+              )}
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">Nome</Label>
+                  <Input 
+                    id="firstName" 
+                    value={formData.firstName as string || ''} 
+                    onChange={(e) => setFormData({...formData, firstName: e.target.value})} 
+                    required 
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Sobrenome</Label>
+                  <Input 
+                    id="lastName" 
+                    value={formData.lastName as string || ''} 
+                    onChange={(e) => setFormData({...formData, lastName: e.target.value})} 
                     required 
                   />
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefone</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input 
-                    id="phone" 
-                    className="pl-10"
-                    value={selectedUser?.phone || ''} 
-                    onChange={(e) => setSelectedUser(prev => prev ? {...prev, phone: e.target.value} : null)} 
+                <Label htmlFor="photo">Foto</Label>
+                <div className="flex items-center space-x-2">                  <Button 
+                    type="button" 
+                    className="border rounded p-1 px-2 text-sm flex items-center gap-1" 
+                    onClick={() => photoInputRef.current?.click()}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Selecionar Foto
+                  </Button>
+                  <input 
+                    ref={photoInputRef}
+                    type="file" 
+                    id="photo" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
                   />
+                  {photoFile && (
+                    <span className="text-sm text-gray-500">
+                      {photoFile.name}
+                    </span>
+                  )}
                 </div>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="role">Função</Label>
                 <Select 
-                  value={selectedUser?.role} 
-                  onValueChange={(value: 'admin' | 'customer') => setSelectedUser(prev => prev ? {...prev, role: value} : null)}
+                  value={formData.role?.id.toString()} 
+                  onValueChange={(value) => setFormData({...formData, role: { id: parseInt(value) }})}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a função" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                    <SelectItem value="customer">Cliente</SelectItem>
+                    {ROLE_OPTIONS.map((role) => (
+                      <SelectItem key={role.id} value={role.id.toString()}>
+                        {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               
-              {isEditMode && (
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select 
-                    value={selectedUser?.status} 
-                    onValueChange={(value: 'active' | 'blocked') => setSelectedUser(prev => prev ? {...prev, status: value} : null)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Ativo</SelectItem>
-                      <SelectItem value="blocked">Bloqueado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select 
+                  value={formData.status?.id.toString()} 
+                  onValueChange={(value) => setFormData({...formData, status: { id: parseInt(value) }})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((status) => (
+                      <SelectItem key={status.id} value={status.id.toString()}>
+                        {status.name === 'active' ? 'Ativo' : 'Inativo'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
-            <DialogFooter>
-              <Button variant="outline" type="button" onClick={() => setOpenUserDialog(false)}>
+            <DialogFooter>              <Button type="button" className="border rounded p-2" onClick={() => setOpenUserDialog(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
+              <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white rounded p-2" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : isEditMode ? (
@@ -498,6 +814,79 @@ const UsersManagement: React.FC = () => {
           </form>
         </DialogContent>
       </Dialog>
+      
+      {/* Diálogo de confirmação para excluir usuário */}
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o usuário <strong>{userToDelete?.firstName} {userToDelete?.lastName}</strong>?
+              <br />
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteUser}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                'Excluir'
+              )}
+            </AlertDialogAction>      </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      {/* Diálogo de confirmação para alteração de status */}
+      <AlertDialog open={openStatusDialog} onOpenChange={setOpenStatusDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar alteração de status</AlertDialogTitle>
+            <AlertDialogDescription>
+              {userToUpdateStatus && (
+                <>
+                  {userToUpdateStatus.status.name === 'active' ? (
+                    <>
+                      Tem certeza que deseja <strong>desativar</strong> o usuário <strong>{userToUpdateStatus.firstName} {userToUpdateStatus.lastName}</strong>?
+                      <br />
+                      Usuários inativos perdem o acesso à plataforma.
+                    </>
+                  ) : (
+                    <>
+                      Tem certeza que deseja <strong>ativar</strong> o usuário <strong>{userToUpdateStatus.firstName} {userToUpdateStatus.lastName}</strong>?
+                      <br />
+                      Usuários ativos têm acesso à plataforma.
+                    </>
+                  )}
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleToggleUserStatus}
+              className={userToUpdateStatus?.status.name === 'active' 
+                ? "bg-orange-600 hover:bg-orange-700 text-white" 
+                : "bg-green-600 hover:bg-green-700 text-white"}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : userToUpdateStatus?.status.name === 'active' ? (
+                'Desativar'
+              ) : (
+                'Ativar'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

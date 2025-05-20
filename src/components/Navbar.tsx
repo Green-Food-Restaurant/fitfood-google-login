@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import CartDropdown from './CartDropdown';
 import ThemeToggle from './ThemeToggle';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
+import { useAuth } from '@/hooks/useAuth';
 
-const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAdmin, logout } = useAuth();
 
   // Detectar scroll para mudar a aparência do navbar
   useEffect(() => {
@@ -26,8 +28,11 @@ const Navbar = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
-  // Verificar se o usuário é admin
-  const isAdmin = localStorage.getItem('userRole') === 'ADMIN';
+  
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
   
   const navLinks = [
     { title: 'Home', path: '/' },
@@ -112,10 +117,31 @@ const Navbar = () => {
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   />
                 )}
-              </Link>
-            ))}
+              </Link>            ))}
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4">              {user && (
+                <div className="flex items-center mr-2">
+                  <span className={`text-sm font-medium ${
+                    isScrolled 
+                      ? 'text-gray-700 dark:text-gray-300' 
+                      : 'text-white/90 dark:text-gray-300'
+                  }`}>
+                    Olá, {user.name ? user.name.split(' ')[0] : 'Usuário'}
+                  </span>
+                  <button 
+                    onClick={handleLogout}
+                    className={`ml-3 p-1.5 rounded-full ${
+                      isScrolled 
+                        ? 'text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
+                        : 'text-white hover:bg-white/10'
+                    } transition-colors`}
+                    aria-label="Sair"
+                    title="Sair"
+                  >
+                    <FiLogOut size={18} />
+                  </button>
+                </div>
+              )}
               <CartDropdown isScrolled={isScrolled} />
               <ThemeToggle />
             </div>
@@ -161,8 +187,20 @@ const Navbar = () => {
                     >
                       {link.title}
                     </Link>
-                  ))}
-                </nav>
+                  ))}                </nav>                {user && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Olá, {user.name ? user.name.split(' ')[0] : 'Usuário'}
+                    </span>
+                    <button 
+                      onClick={handleLogout}
+                      className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-500"
+                    >
+                      <FiLogOut size={18} />
+                      <span>Sair</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
