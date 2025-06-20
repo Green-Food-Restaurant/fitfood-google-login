@@ -287,8 +287,8 @@ class AuthService {  /**
     // Remover também para compatibilidade com código antigo
     localStorage.removeItem('userRole');
     
-    // Disparar evento de logout
-    document.dispatchEvent(new CustomEvent('auth:logout'));
+    // Remover o disparo do evento 'auth:logout' para evitar loop
+    // document.dispatchEvent(new CustomEvent('auth:logout'));
     
     // Log apenas em desenvolvimento
     if (process.env.NODE_ENV === 'development') {
