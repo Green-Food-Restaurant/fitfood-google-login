@@ -553,21 +553,21 @@ const UsersManagement: React.FC = () => {
                         </TableCell>                        <TableCell className="text-center">                          <Badge 
                             className={`
                               cursor-pointer hover:shadow-md transition-all
-                              ${user.status.name === 'active'
+                              ${user.status.name === 'Active'
                                 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-900 hover:bg-green-200'
                                 : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-900 hover:bg-red-200'
                               }
                               flex items-center justify-center gap-1 px-3 py-1
                             `}
                             onClick={() => handleToggleUserStatusConfirm(user)}
-                            title={`Clique para ${user.status.name === 'active' ? 'desativar' : 'ativar'} este usuário`}
+                            title={`Clique para ${user.status.name === 'Active' ? 'desativar' : 'ativar'} este usuário`}
                           >
                             {updatingStatusIds.includes(user.id) ? (
                               <>
                                 <Loader2 className="h-3 w-3 animate-spin mr-1" />
                                 <span>Atualizando...</span>
                               </>
-                            ) : user.status.name === 'active' 
+                            ) : user.status.name === 'Active' 
                               ? <span className="flex items-center gap-1"><UserCheck className="h-3 w-3 mr-1" /> Ativo</span> 
                               : <span className="flex items-center gap-1"><UserX className="h-3 w-3 mr-1" /> Inativo</span>
                             }
