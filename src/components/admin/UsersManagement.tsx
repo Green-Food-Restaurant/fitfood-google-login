@@ -250,15 +250,15 @@ const UsersManagement: React.FC = () => {
   // Função para alternar o status do usuário (ativo/inativo)
   const handleToggleUserStatus = async () => {
     if (!userToUpdateStatus) return;
-    
+
     // Evite múltiplos cliques quando uma atualização já está em andamento
     if (updatingStatusIds.includes(userToUpdateStatus.id)) {
       return;
     }
 
     try {
-      // Determinar o novo status (inverso do atual)
-      const currentIsActive = userToUpdateStatus.status.name === 'active';
+      // Corrigir: considerar 'active' e 'Active' como ativo
+      const currentIsActive = userToUpdateStatus.status.name === 'active' || userToUpdateStatus.status.name === 'Active';
       const newIsActive = !currentIsActive;
       const newStatusText = newIsActive ? 'ativo' : 'inativo';
       
