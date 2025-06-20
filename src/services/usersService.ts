@@ -1,4 +1,4 @@
-import { httpService } from './httpService';
+import httpService from './httpService';
 import { adaptApiResponse } from '@/utils/apiUtils';
 
 export interface User {

@@ -26,50 +26,7 @@ const Login = () => {
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, location]);
-  // Função para simular login como admin (apenas para demonstração)
-  const simulateAdminLogin = async () => {
-    // Mock de um token para teste (apenas para fins de demonstração)
-    const mockToken = generateMockToken(UserRole.ADMIN);
-    await login(mockToken, rememberMe);
-    
-    toast({
-      title: "Login de Administrador",
-      description: "Você entrou como administrador",
-      variant: "default",
-    });
-    
-    // A navegação agora acontece no useEffect que observa isAuthenticated
-  };
-
-  // Função para simular login como cliente comum (apenas para demonstração)
-  const simulateUserLogin = async () => {
-    // Mock de um token para teste (apenas para fins de demonstração)
-    const mockToken = generateMockToken(UserRole.USER);
-    await login(mockToken, rememberMe);
-    
-    toast({
-      title: "Login de Usuário",
-      description: "Você entrou como cliente",
-      variant: "default",
-    });
-    
-    // A navegação agora acontece no useEffect que observa isAuthenticated
-  };
-
-  // Gera um token falso para demonstração
-  const generateMockToken = (role: UserRole) => {
-    const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
-    const payload = btoa(JSON.stringify({
-      name: role === UserRole.ADMIN ? 'Admin Demo' : 'Usuário Demo',
-      email: role === UserRole.ADMIN ? 'admin@fitfood.com' : 'user@fitfood.com',
-      picture: 'https://ui-avatars.com/api/?name=' + (role === UserRole.ADMIN ? 'Admin' : 'User'),
-      role: role,
-      exp: Math.floor(Date.now() / 1000) + 3600 // Expira em 1 hora
-    }));
-    
-    return `${header}.${payload}.demo`;
-  };
-
+  
   // Variantes de animação para elementos da página
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -315,25 +272,7 @@ const Login = () => {
                 )}
 
                 {/* Para fins de demonstração - Botões para simular diferentes tipos de login */}
-                <div className="pt-2 space-y-2">
-                  <Button 
-                    onClick={simulateAdminLogin}
-                    variant="outline" 
-                    className="w-full border-green-500 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-900/20"
-                    disabled={loading}
-                  >
-                    Demonstração: Entrar como Admin
-                  </Button>
-                  
-                  <Button
-                    onClick={simulateUserLogin}
-                    variant="outline"
-                    className="w-full"
-                    disabled={loading}
-                  >
-                    Demonstração: Entrar como Cliente
-                  </Button>
-                </div>
+                {/* Removido para produção */}
               </motion.div>
               
               <motion.div 

@@ -70,16 +70,13 @@ class AuthService {  /**
    * @param rememberMe Se verdadeiro, mantém o usuário logado por mais tempo
    * @returns Dados de autenticação do usuário
    */  async loginWithGoogle(idToken: string, rememberMe = false): Promise<User> {
+    // eslint-disable-next-line no-useless-catch
     try {
-      console.log('Iniciando autenticação com Google...');
-      
       // Corrigimos a URL para evitar duplicação do prefixo /api/v1
       const response = await httpService.post<AuthResponse>(`/auth/google/login`, {
         idToken,
         rememberMe
       });
-      
-      console.log('Resposta da API recebida:', response);
       
       // Converter o formato da API para o formato interno da aplicação
       const userData = this.convertApiUserToAppUser(response.user);
@@ -87,59 +84,9 @@ class AuthService {  /**
       // Salvar dados de autenticação
       this.saveAuthData(response.token, response.refreshToken, userData, rememberMe);
       return userData;
-    } catch (error) {      // Para fins de demonstração - só será executado quando o backend não estiver disponível
-      console.warn('Usando autenticação de fallback para demonstração');
-      console.warn('Erro detalhado:', error);
-        try {
-        // Simular a resposta da API para testes em ambiente de desenvolvimento
-        // Criamos um mock com a mesma estrutura da resposta da API real
-        const mockApiResponse = {
-          token: idToken || "mock-token-" + Date.now(),
-          refreshToken: "mock-refresh-token-" + Date.now(),
-          tokenExpires: Date.now() + 900000, // 15 minutos
-          user: {
-            id: 14,
-            email: "admin@fitfood.com", // Usamos um email de administrador para teste
-            provider: "google",
-            socialId: String(Math.floor(Math.random() * 100000000)),
-            firstName: "Admin",
-            lastName: "Teste",
-            role: {
-              id: 1, // ID 1 sempre reservado para administrador
-              name: "Admin", // Nome do papel de administrador
-              __entity: "RoleEntity"
-            },
-            status: {
-              id: 1,
-              name: "Active",
-              __entity: "StatusEntity"
-            },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            deletedAt: null
-          }
-        };
-        
-        console.log('Usando dados simulados de administrador para teste:', mockApiResponse);
-        
-        // Converter e salvar os dados simulados
-        const userData = this.convertApiUserToAppUser(mockApiResponse.user);
-        this.saveAuthData(mockApiResponse.token, mockApiResponse.refreshToken, userData, rememberMe);
-        return userData;      } catch (decodeError) {
-        console.error('Erro ao processar dados simulados:', decodeError);
-        // Em caso de erro, retornar um usuário administrador de fallback
-        const fallbackUser = {
-          name: 'Admin Fallback',
-          email: 'admin@fitfood.com',
-          picture: 'https://ui-avatars.com/api/?name=Admin+Fallback&background=purple&color=fff',
-          role: UserRole.ADMIN // Garantir que está definido como ADMIN
-        };
-        
-        console.log('Usando usuário de fallback:', fallbackUser);
-        
-        this.saveAuthData(idToken || "fallback-token", '', fallbackUser, rememberMe);
-        return fallbackUser;
-      }
+    } catch (error) {
+      // Removido backend simulado e fallback para produção
+      throw error;
     }
   }  /**
    * Converte o usuário da API para o formato interno da aplicação
@@ -156,15 +103,6 @@ class AuthService {  /**
     
     // Um usuário é admin se o nome do papel contém 'admin' OU o ID do papel é 1
     const isAdmin = roleName.toLowerCase().includes('admin') || roleId === 1;
-
-    console.log('Convertendo dados de usuário:', {
-      name: `${apiUser.firstName} ${apiUser.lastName}`,
-      role: isAdmin ? 'ADMIN' : 'USER',
-      roleInfo: {
-        id: roleId,
-        name: roleName
-      }
-    });
 
     return {
       name: `${apiUser.firstName} ${apiUser.lastName}`.trim(),
@@ -190,15 +128,6 @@ class AuthService {  /**
       
       // Um usuário é admin se o nome do papel contém 'admin' OU o ID do papel é 1
       const isAdmin = roleName.toLowerCase().includes('admin') || roleId === 1;
-      
-      console.log('Extraindo informações do token JWT:', {
-        userId: decoded.id,
-        role: isAdmin ? 'ADMIN' : 'USER',
-        roleInfo: {
-          id: roleId,
-          name: roleName
-        }
-      });
       
       // Extrair informações básicas do token
       return {
