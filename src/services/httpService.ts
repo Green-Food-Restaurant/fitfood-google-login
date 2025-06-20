@@ -7,7 +7,8 @@ const API_URL = 'http://173.249.12.112:8081/green-food/api/v1';
 // Serviço que gerencia requisições HTTP autenticadas
 class HttpService {
   private api: AxiosInstance;
-  private static instance: HttpService;  private constructor() {    this.api = axios.create({
+  private static instance: HttpService;
+  private constructor() {    this.api = axios.create({
       baseURL: API_URL,
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +21,7 @@ class HttpService {
         'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'",
         'Permissions-Policy': "camera=(), microphone=(), geolocation=()"
       },
-      withCredentials: false // Desativamos withCredentials para evitar problemas de CORS com Access-Control-Allow-Origin: *
+      withCredentials: true // Para suportar autenticação baseada em cookies nas solicitações cross-origin
     });
 
     this.setupInterceptors();
@@ -146,7 +147,8 @@ class HttpService {
             return Promise.reject(refreshError);
           }
         }
-          // Para outros códigos de erro específicos, podemos ter tratamentos próprios
+        
+        // Para outros códigos de erro específicos, podemos ter tratamentos próprios
         if (error.response?.status === 403) {
           console.error('Acesso proibido (403):', error.response.data);
           // Opcionalmente disparar evento de acesso proibido
@@ -155,20 +157,6 @@ class HttpService {
         if (error.response?.status === 500) {
           console.error('Erro no servidor (500):', error.response.data);
           // Opcionalmente registrar o erro em serviço de telemetria
-        }
-        
-        // Tratamento específico para erros de CORS
-        if (error.message && (
-            error.message.includes('Network Error') || 
-            error.message.includes('CORS') || 
-            error.message.includes('cross-origin')
-        )) {
-          console.error('Erro de CORS ou rede:', error.message);
-          
-          // Notificar o usuário sobre problemas de conexão
-          document.dispatchEvent(new CustomEvent('network:error', { 
-            detail: { message: 'Erro de conexão com o servidor. Verifique sua internet ou se o servidor está disponível.' } 
-          }));
         }
         
         return Promise.reject(error);
@@ -205,23 +193,16 @@ class HttpService {
     const response = await this.api.post<T>(url, data, config);
     return response.data;
   }
+
   public async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.put<T>(url, data, config);
     return response.data;
   }
-  
-  public async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.patch<T>(url, data, config);
-    return response.data;
-  }
-  
+
   public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.delete<T>(url, config);
     return response.data;
   }
 }
 
-// Exportar a instância como exportação nomeada e padrão para compatibilidade
-const httpServiceInstance = HttpService.getInstance();
-export const httpService = httpServiceInstance;
-export default httpServiceInstance;
+export default HttpService.getInstance();
