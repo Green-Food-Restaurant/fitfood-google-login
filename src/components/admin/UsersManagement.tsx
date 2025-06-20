@@ -550,60 +550,57 @@ const UsersManagement: React.FC = () => {
                             <Calendar className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
                             <span className="text-sm">{formatDate(user.createdAt)}</span>
                           </div>
-                        </TableCell>                        <TableCell className="text-center">                          <Badge 
+                        </TableCell>                        <TableCell className="text-center">
+                          <Badge
                             className={`
-                              cursor-pointer hover:shadow-md transition-all
-                              ${user.status.name === 'Active'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-900 hover:bg-green-200'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-900 hover:bg-red-200'
+                              ${user.status.name === 'active' || user.status.name === 'Active'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-900'
+                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-900'
                               }
-                              flex items-center justify-center gap-1 px-3 py-1
+                              flex items-center justify-center gap-1 px-3 py-1 select-none
                             `}
-                            onClick={() => handleToggleUserStatusConfirm(user)}
-                            title={`Clique para ${user.status.name === 'Active' ? 'desativar' : 'ativar'} este usuário`}
+                            // Removido onClick e title para não ser mais botão
+                            style={{ cursor: 'default', pointerEvents: 'none' }}
                           >
-                            {updatingStatusIds.includes(user.id) ? (
-                              <>
-                                <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                                <span>Atualizando...</span>
-                              </>
-                            ) : user.status.name === 'Active' 
-                              ? <span className="flex items-center gap-1"><UserCheck className="h-3 w-3 mr-1" /> Ativo</span> 
-                              : <span className="flex items-center gap-1"><UserX className="h-3 w-3 mr-1" /> Inativo</span>
-                            }
+                            {user.status.name === 'active' || user.status.name === 'Active' ? (
+                              <span className="flex items-center gap-1"><UserCheck className="h-3 w-3 mr-1" /> Ativo</span>
+                            ) : (
+                              <span className="flex items-center gap-1"><UserX className="h-3 w-3 mr-1" /> Inativo</span>
+                            )}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center justify-end space-x-1">                            <Button 
+                          <div className="flex items-center justify-end space-x-2">
+                            <Button
                               onClick={() => handleEditUser(user)}
-                              className="h-8 w-8 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                              className="h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700 text-white"
                               title="Editar usuário"
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Pencil className="h-4 w-4 text-white" />
                             </Button>
-                            
-                            <Button 
+                            <Button
                               onClick={() => handleDeleteConfirm(user)}
-                              className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30"
+                              className="h-8 w-8 p-0 bg-red-600 hover:bg-red-700 text-white"
                               title="Excluir usuário"
                             >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>                            <Button 
+                              <Trash2 className="h-4 w-4 text-white" />
+                            </Button>
+                            <Button
                               onClick={() => handleToggleUserStatusConfirm(user)}
                               className={`h-8 w-8 p-0 ${
-                                user.status.name === 'active' 
-                                ? 'text-orange-500 hover:text-orange-700 hover:bg-orange-100 dark:hover:bg-orange-900/30' 
-                                : 'text-green-500 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/30'
-                              } ${updatingStatusIds.includes(user.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                              title={user.status.name === 'active' ? 'Desativar usuário' : 'Ativar usuário'}
+                                user.status.name === 'active' || user.status.name === 'Active'
+                                  ? 'bg-orange-500 hover:bg-orange-600'
+                                  : 'bg-green-600 hover:bg-green-700'
+                              } text-white ${updatingStatusIds.includes(user.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              title={user.status.name === 'active' || user.status.name === 'Active' ? 'Desativar usuário' : 'Ativar usuário'}
                               disabled={updatingStatusIds.includes(user.id)}
                             >
                               {updatingStatusIds.includes(user.id) ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : user.status.name === 'active' ? (
-                                <UserX className="h-4 w-4" />
+                                <Loader2 className="h-4 w-4 animate-spin text-white" />
+                              ) : user.status.name === 'active' || user.status.name === 'Active' ? (
+                                <UserX className="h-4 w-4 text-white" />
                               ) : (
-                                <UserCheck className="h-4 w-4" />
+                                <UserCheck className="h-4 w-4 text-white" />
                               )}
                             </Button>
                           </div>
@@ -850,7 +847,7 @@ const UsersManagement: React.FC = () => {
             <AlertDialogDescription>
               {userToUpdateStatus && (
                 <>
-                  {userToUpdateStatus.status.name === 'active' ? (
+                  {userToUpdateStatus.status.name === 'active' || userToUpdateStatus.status.name === 'Active' ? (
                     <>
                       Tem certeza que deseja <strong>desativar</strong> o usuário <strong>{userToUpdateStatus.firstName} {userToUpdateStatus.lastName}</strong>?
                       <br />
@@ -871,14 +868,14 @@ const UsersManagement: React.FC = () => {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleToggleUserStatus}
-              className={userToUpdateStatus?.status.name === 'active' 
-                ? "bg-orange-600 hover:bg-orange-700 text-white" 
-                : "bg-green-600 hover:bg-green-700 text-white"}
+              className={userToUpdateStatus?.status.name === 'active' || userToUpdateStatus?.status.name === 'Active' 
+                ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                : 'bg-green-600 hover:bg-green-700 text-white'}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : userToUpdateStatus?.status.name === 'active' ? (
+              ) : userToUpdateStatus?.status.name === 'active' || userToUpdateStatus?.status.name === 'Active' ? (
                 'Desativar'
               ) : (
                 'Ativar'
