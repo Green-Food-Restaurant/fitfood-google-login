@@ -71,8 +71,7 @@ export const STATUS_OPTIONS = [
 
 export const ROLE_OPTIONS = [
   { id: 1, name: 'admin' },
-  { id: 2, name: 'user' },
-  { id: 3, name: 'manager' }
+  { id: 2, name: 'user' }
 ];
 
 export const usersService = {
