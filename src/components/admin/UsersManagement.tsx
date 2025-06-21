@@ -352,11 +352,23 @@ const UsersManagement: React.FC = () => {
       }
       
       // Adicionar ID da foto ao formulário, se houver
-      const userData = {
+      let userData = {
         ...formData,
         ...(photoId ? { photo: { id: photoId } } : {})
       };
-      
+
+      // Se for edição, garantir que o campo email só seja enviado se alterado
+      if (isEditMode && selectedUser) {
+        if (
+          'email' in userData &&
+          userData.email === selectedUser.email
+        ) {
+          // Remove o campo email se não foi alterado
+          const { email, ...rest } = userData;
+          userData = rest;
+        }
+      }
+
       console.log(`${isEditMode ? 'Atualizando' : 'Criando'} usuário:`, userData);
       
       if (isEditMode && selectedUser) {
