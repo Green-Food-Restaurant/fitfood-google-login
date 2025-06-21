@@ -37,8 +37,8 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
   const navLinks = [
     { title: 'Home', path: '/' },
     { title: 'Produtos', path: '/produtos' },
-    { title: 'Sobre', path: '/#sobre' },
-    { title: 'Contato', path: '/#contato' },
+    { title: 'Sobre', path: '/sobre' },
+    { title: 'Contato', path: '/Contato' },
     ...(isAdmin ? [{ title: 'Admin', path: '/admin' }] : [])
   ];
 
@@ -142,14 +142,14 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                   </button>
                 </div>
               )}
-              <CartDropdown isScrolled={isScrolled} />
+              <CartDropdown />
               <ThemeToggle />
             </div>
           </nav>
 
           {/* Mobile Navigation Toggle */}
           <div className="flex items-center space-x-4 md:hidden">
-            <CartDropdown isScrolled={isScrolled} />
+            <CartDropdown />
             <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

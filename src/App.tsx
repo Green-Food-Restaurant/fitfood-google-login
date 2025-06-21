@@ -12,6 +12,8 @@ import Products from "./pages/Products";
 import Checkout from "./pages/Checkout";
 import Cart from "./pages/Cart";
 import Admin from "./pages/Admin";
+import Contato from "./pages/Contato";
+import Sobre from "./pages/Sobre";
 import { CartProvider } from "react-use-cart";
 import { ThemeProvider } from "next-themes";
 import { preloadPlaceholders } from "@/utils/placeholders";
@@ -92,6 +94,8 @@ const App = () => (
                     <Admin />
                   </ProtectedRoute>
                 } />
+                <Route path="/contato" element={<Contato />} />
+                <Route path="/sobre" element={<Sobre />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
