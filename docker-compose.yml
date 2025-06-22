@@ -12,10 +12,11 @@ services:
       - "80:80"
     restart: unless-stopped
     networks:
-      - fitfood-network
+      - green-food-network
     # Se precisar de variáveis de ambiente
     environment:
       - NODE_ENV=production
+      - VITE_API_URL=http://localhost:3001/api/v1
     # Volumes para desenvolvimento (opcional, comentado por padrão)
     # volumes:
     #   - ./src:/app/src
@@ -34,5 +35,5 @@ services:
   #     - fitfood-network
 
 networks:
-  fitfood-network:
-    driver: bridge
+  green-food-network:
+    external: true

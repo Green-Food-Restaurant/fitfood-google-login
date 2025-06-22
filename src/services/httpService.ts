@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import authService from './authService';
 
-// Constantes
-const API_URL = 'http://173.249.12.112:8081/green-food/api/v1';
+// Preferir variável de ambiente, com fallback para o valor padrão
+const API_URL = process.env.VITE_API_URL || 'http://173.249.12.112:8081/green-food/api/v1';
 
 // Serviço que gerencia requisições HTTP autenticadas
 class HttpService {
