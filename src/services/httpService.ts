@@ -3,6 +3,7 @@ import authService from './authService';
 
 // Preferir variável de ambiente do Vite, com fallback para o valor padrão
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+const WITH_CREDENTIALS = import.meta.env.VITE_WITH_CREDENTIALS === 'false';
 
 // Serviço que gerencia requisições HTTP autenticadas
 class HttpService {
@@ -21,7 +22,7 @@ class HttpService {
         'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'",
         'Permissions-Policy': "camera=(), microphone=(), geolocation=()"
       },
-      withCredentials: true // Para suportar autenticação baseada em cookies nas solicitações cross-origin
+      withCredentials: WITH_CREDENTIALS
     });
 
     this.setupInterceptors();

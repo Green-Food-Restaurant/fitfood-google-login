@@ -24,6 +24,7 @@ services:
       - VITE_USER_INFO_KEY=fitfood_user_info
       - VITE_REMEMBER_ME_KEY=fitfood_remember_me
       - VITE_SESSION_TIMEOUT=1800000
+      - VITE_WITH_CREDENTIALS=false
     # Volumes para desenvolvimento (opcional, comentado por padrão)
     # volumes:
     #   - ./src:/app/src
