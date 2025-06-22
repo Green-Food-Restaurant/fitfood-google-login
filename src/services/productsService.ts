@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // URL base da API
-const BASE_URL = 'http://localhost:8082/v1/product';
+const BASE_URL = import.meta.env.VITE_PRODUCTS_API_URL || 'http://localhost:8082/v1/product';
 
 // Tipos
 export interface ProductResponse {

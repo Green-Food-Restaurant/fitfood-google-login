@@ -3,12 +3,12 @@ import { jwtDecode } from 'jwt-decode';
 import { UserRole } from '@/contexts/AuthContext';
 
 // Constantes
-const AUTH_API_URL = '/auth';
-const TOKEN_KEY = 'fitfood_auth_token';
-const REFRESH_TOKEN_KEY = 'fitfood_refresh_token';
-const USER_INFO_KEY = 'fitfood_user_info';
-const REMEMBER_ME_KEY = 'fitfood_remember_me';
-const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutos em milissegundos
+const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || '/auth';
+const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || 'fitfood_auth_token';
+const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY || 'fitfood_refresh_token';
+const USER_INFO_KEY = import.meta.env.VITE_USER_INFO_KEY || 'fitfood_user_info';
+const REMEMBER_ME_KEY = import.meta.env.VITE_REMEMBER_ME_KEY || 'fitfood_remember_me';
+const SESSION_TIMEOUT = Number(import.meta.env.VITE_SESSION_TIMEOUT) || 30 * 60 * 1000; // 30 minutos em milissegundos
 
 // Interfaces
 interface TokenPayload {

@@ -17,6 +17,13 @@ services:
     environment:
       - NODE_ENV=production
       - VITE_API_URL=http://localhost:3001/api/v1
+      - VITE_PRODUCTS_API_URL=http://localhost:8082/v1/product
+      - VITE_AUTH_API_URL=/auth
+      - VITE_TOKEN_KEY=fitfood_auth_token
+      - VITE_REFRESH_TOKEN_KEY=fitfood_refresh_token
+      - VITE_USER_INFO_KEY=fitfood_user_info
+      - VITE_REMEMBER_ME_KEY=fitfood_remember_me
+      - VITE_SESSION_TIMEOUT=1800000
     # Volumes para desenvolvimento (opcional, comentado por padrão)
     # volumes:
     #   - ./src:/app/src
