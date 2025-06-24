@@ -1,27 +1,28 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from "@/components/ui/form";
+import axios from 'axios';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage
+} from '@/components/ui/form';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from 'react-use-cart';
 import { toast } from 'sonner';
 
+const CHECKOUT_API_URL = import.meta.env.VITE_CHECKOUT_API_URL || 'http://localhost:8090/v1/checkout/create';
+
 const Checkout = () => {
-  const { items, getCartTotal, clearCart } = useCart();
+  const { isEmpty, totalItems, items, cartTotal, emptyCart } = useCart();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
-  const cartTotal = getCartTotal();
   
   const form = useForm({
     defaultValues: {
@@ -34,27 +35,54 @@ const Checkout = () => {
       numeroCartao: '',
       nomeCartao: '',
       validade: '',
-      cvv: ''
+      cvv: '',
+      paymentMethod: 'CREDIT_CARD'
     }
   });
 
-  const handleSubmitOrder = (data) => {
-    if (items.length === 0) {
+  const paymentMethods = [
+    { value: 'CREDIT_CARD', label: 'Cartão de Crédito' },
+    { value: 'DEBIT_CARD', label: 'Cartão de Débito' },
+    { value: 'PAYPAL', label: 'PayPal' },
+    { value: 'BANK_TRANSFER', label: 'Transferência Bancária' },
+    { value: 'CASH_ON_DELIVERY', label: 'Pagamento na Entrega' }
+  ];
+
+  const handleSubmitOrder = async (data) => {
+    if (isEmpty) {
       toast.error("Seu carrinho está vazio!");
       return;
     }
 
     setIsProcessing(true);
-    // Simulando processamento de pagamento
-    setTimeout(() => {
-      setIsProcessing(false);
-      clearCart();
+    try {
+      // Montar payload para o microserviço de checkout
+      const payload = {
+        cartId: String(Date.now()), // Pode ser um ID real do carrinho se houver
+        totalAmount: Number(cartTotal.toFixed(2)),
+        productQuantity: items.length,
+        paymentMethod: data.paymentMethod,
+        products: items.map(item => ({
+          id: String(item.id),
+          name: item.nome || item.name || '',
+          description: item.descricao || item.description || '',
+          price: item.preco ?? item.price ?? 0,
+          quantity: item.quantidade ?? item.quantity ?? 1
+        }))
+      };
+      const response = await axios.post(CHECKOUT_API_URL, payload);
+      console.log('Resposta do checkout:', response.data);
+      emptyCart();
       toast.success("Pedido realizado com sucesso!");
       navigate('/home');
-    }, 1500);
+    } catch (error) {
+      toast.error("Erro ao processar o pedido. Tente novamente.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
   
-  if (items.length === 0) {
+  if (isEmpty) {
     return (
       <div className="min-h-screen bg-[#F4FDF2] flex items-center justify-center">
         <Card className="w-[400px]">
@@ -90,225 +118,83 @@ const Checkout = () => {
         <h1 className="text-2xl font-bold mb-8 text-center">Finalizar Pedido</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7">
-            <Card>
-              <CardHeader>
-                <CardTitle>Seus Dados</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="nome"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nome Completo</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="Seu nome completo" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="email" placeholder="seu@email.com" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="telefone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Telefone</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="(11) 98765-4321" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
+          {/* Removido o formulário de dados do cliente */}
+          <div className="lg:col-span-5 mx-auto">
+            <Form {...form}>
+              <form className="space-y-6" onSubmit={form.handleSubmit(handleSubmitOrder)}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Resumo do Pedido</CardTitle>
+                  </CardHeader>
+                  <CardContent>
                     <div className="space-y-4">
-                      <h3 className="font-medium">Endereço de Entrega</h3>
-                      
+                      {items.map(item => (
+                        <div key={item.id} className="flex items-center py-2 border-b">
+                          <img 
+                            src={item.imagem} 
+                            alt={item.nome}
+                            className="w-12 h-12 object-contain rounded-md mr-4"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-medium">{item.nome}</h4>
+                            <p className="text-sm text-gray-600">
+                              {item.quantidade ?? 1} x R$ {(item.preco ?? 0).toFixed(2)}
+                            </p>
+                          </div>
+                          <span className="font-bold">
+                            R$ {((item.quantidade ?? 1) * (item.preco ?? 0)).toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-6 space-y-2">
+                      <div className="flex justify-between">
+                        <span>Subtotal</span>
+                        <span>R$ {cartTotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Entrega</span>
+                        <span>R$ 0.00</span>
+                      </div>
+                      <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                        <span>Total</span>
+                        <span>R$ {cartTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+                    {/* Forma de pagamento dentro do resumo */}
+                    <div className="space-y-4 mt-6">
+                      <h3 className="font-medium">Método de Pagamento</h3>
                       <FormField
                         control={form.control}
-                        name="endereco"
+                        name="paymentMethod"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Endereço completo</FormLabel>
+                            <FormLabel>Método de Pagamento</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="Rua, número, complemento" />
+                              <select {...field} className="w-full border rounded px-3 py-2">
+                                {paymentMethods.map(method => (
+                                  <option key={method.value} value={method.value}>{method.label}</option>
+                                ))}
+                              </select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="cidade"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Cidade</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="Sua cidade" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="cep"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>CEP</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="00000-000" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <h3 className="font-medium">Informações de Pagamento</h3>
-                      
-                      <FormField
-                        control={form.control}
-                        name="numeroCartao"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Número do Cartão</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="0000 0000 0000 0000" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="nomeCartao"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nome no Cartão</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="Nome como está no cartão" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="validade"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Validade</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="MM/AA" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="cvv"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>CVV</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="123" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="lg:col-span-5">
-            <Card>
-              <CardHeader>
-                <CardTitle>Resumo do Pedido</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {items.map(item => (
-                    <div key={item.id} className="flex items-center py-2 border-b">
-                      <img 
-                        src={item.imagem} 
-                        alt={item.nome}
-                        className="w-12 h-12 object-contain rounded-md mr-4"
-                      />
-                      <div className="flex-1">
-                        <h4 className="font-medium">{item.nome}</h4>
-                        <p className="text-sm text-gray-600">
-                          {item.quantidade} x R$ {item.preco.toFixed(2)}
-                        </p>
-                      </div>
-                      <span className="font-bold">
-                        R$ {(item.quantidade * item.preco).toFixed(2)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="mt-6 space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>R$ {cartTotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Entrega</span>
-                    <span>R$ 0.00</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                    <span>Total</span>
-                    <span>R$ {cartTotal.toFixed(2)}</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  onClick={form.handleSubmit(handleSubmitOrder)} 
-                  className="w-full bg-green-600 hover:bg-green-700"
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? 'Processando...' : 'Finalizar Compra'}
-                </Button>
-              </CardFooter>
-            </Card>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      type="submit"
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? 'Processando...' : 'Finalizar Compra'}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </form>
+            </Form>
           </div>
         </div>
       </main>
