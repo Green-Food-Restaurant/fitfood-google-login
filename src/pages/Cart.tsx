@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'; // Importamos AnimatePr
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Button } from '@/components/ui/button';
+import { createCheckout } from '@/services/checkoutService';
 
 const Cart = () => {
   const {
@@ -56,6 +57,29 @@ const Cart = () => {
       } 
     }
   };
+
+  async function handleCheckout() {
+    if (isEmpty) return;
+    try {
+      const payload = {
+        cartId: String(Date.now()),
+        totalAmount: Number(cartTotal.toFixed(2)),
+        productQuantity: items.length, // ou pode ser dinâmico se desejar
+        products: items.map(item => ({
+          id: String(item.id),
+          name: item.name || '',
+          description: item.description || '',
+          price: item.price ?? 0,
+          quantity: item.quantity ?? 1
+        }))
+      };
+      const response = await createCheckout(payload);
+      const url = response.data.data.initPoint;
+      window.location.href = url;
+    } catch (error) {
+      alert('Erro ao redirecionar para o pagamento. Tente novamente.');
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#F4FDF2]">
@@ -305,7 +329,7 @@ const Cart = () => {
                 >
                   <Button 
                     className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-medium py-3"
-                    onClick={() => window.location.href = '/checkout'}
+                    onClick={handleCheckout}
                   >
                     Finalizar Compra
                   </Button>
