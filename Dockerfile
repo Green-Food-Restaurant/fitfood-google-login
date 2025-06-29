@@ -1,32 +1,27 @@
 # Etapa de build
-FROM node:20-alpine AS build
-
-# Instala o pnpm globalmente
-RUN npm install -g pnpm
+FROM node:18-alpine AS builder
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos de configuração
-COPY package.json pnpm-lock.yaml ./
-
-# Instala as dependências
-RUN pnpm install --frozen-lockfile
+# Instala dependências
+COPY package*.json ./
+RUN npm ci
 
 # Copia o código fonte
 COPY . .
 
-# Executa o build da aplicação
-RUN pnpm build
+# Construi a aplicação
+RUN npm run build
 
 # Etapa de produção
-FROM nginx:alpine AS production
-
-# Copia os arquivos de build para o diretório do nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+FROM nginx:stable-alpine
 
 # Copia uma configuração personalizada do nginx (opcional)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copia os arquivos de build da etapa anterior
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expõe a porta 80
 EXPOSE 80
