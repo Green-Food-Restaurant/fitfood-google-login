@@ -4,10 +4,10 @@ import './index.css'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 
-const clientId = "565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com"; 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com"; 
 
 createRoot(document.getElementById("root")!).render(
-    <GoogleOAuthProvider clientId={clientId}>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <App />
     </GoogleOAuthProvider>
 );

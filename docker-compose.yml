@@ -3,44 +3,33 @@ version: '3.8'
 services:
   # Serviço do frontend
   frontend:
-    image: dalexandrias/fitfood:latest
+    image: dalexandrias/fitfood-web-frontend:latest
     # build:
     #   context: .
     #   dockerfile: Dockerfile
     container_name: fitfood-frontend
     ports:
-      - "80:80"
+      - "3000:3000"
     restart: unless-stopped
     networks:
       - green-food-network
     # Se precisar de variáveis de ambiente
     environment:
-      - NODE_ENV=production
-      - VITE_API_URL=http://localhost:3001/api/v1
+      - VITE_APP_ENV=production
+      - VITE_AUTH_API_URL=http://localhost:8080/api/auth
       - VITE_PRODUCTS_API_URL=http://localhost:8082/v1/product
-      - VITE_AUTH_API_URL=/auth
+      - VITE_CHECKOUT_API_URL=http://localhost:8080/api/checkout
+      - VITE_USERS_API_URL=http://localhost:8080/api/users
+      - VITE_API_BASE_URL=http://localhost:8080/api
+      - VITE_ENABLE_ADMIN_PANEL=true
+      - VITE_ENABLE_CHECKOUT=true
       - VITE_TOKEN_KEY=fitfood_auth_token
       - VITE_REFRESH_TOKEN_KEY=fitfood_refresh_token
       - VITE_USER_INFO_KEY=fitfood_user_info
       - VITE_REMEMBER_ME_KEY=fitfood_remember_me
       - VITE_SESSION_TIMEOUT=1800000
       - VITE_WITH_CREDENTIALS=false
-    # Volumes para desenvolvimento (opcional, comentado por padrão)
-    # volumes:
-    #   - ./src:/app/src
-
-  # Serviço de API mock (opcional, para desenvolvimento)
-  # Descomente se precisar de um servidor de API para testes
-  # api-mock:
-  #   image: stoplight/prism:4
-  #   container_name: fitfood-api-mock
-  #   command: mock -h 0.0.0.0 /api/openapi.yaml
-  #   ports:
-  #     - "4010:4010"
-  #   volumes:
-  #     - ./api:/api
-  #   networks:
-  #     - fitfood-network
+      - VITE_GOOGLE_CLIENT_ID=565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com
 
 networks:
   green-food-network:

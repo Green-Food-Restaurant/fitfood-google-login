@@ -14,6 +14,7 @@ env:
   REGISTRY: docker.io
   IMAGE_NAME: fitfood-web-frontend
   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+  CONTAINER_PORT: 3000
 
 jobs:
   build:
@@ -218,7 +219,12 @@ jobs:
           RESPONSE=$(curl -v -s -X POST "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_FRONTEND_UUID }}&force=false" \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-          -d '{"ref": "${{ github.ref }}"}')
+          -d '{
+            "ref": "${{ github.ref }}",
+            "environment": {
+              "PORT": "${{ env.CONTAINER_PORT }}"
+            }
+          }')
           echo "Resposta completa do Coolify:"
           echo "$RESPONSE"
           echo "Estrutura JSON da resposta:"
@@ -275,7 +281,7 @@ jobs:
             fi
           fi
           echo "Realizando verificação final do serviço..."
-          echo "O serviço está sendo implantado ou já está em execução no Coolify."
+          echo "O serviço está sendo implantado ou já está em execução no Coolify na porta ${{ env.CONTAINER_PORT }}."
 
   notify-deploy:
     needs: [deploy-netlify, deploy-coolify]
