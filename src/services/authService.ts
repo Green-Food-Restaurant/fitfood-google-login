@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { UserRole } from '@/contexts/AuthContext';
 
 // Constantes
-const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || '/auth';
+const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001/api/v1/auth';
 const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || 'fitfood_auth_token';
 const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY || 'fitfood_refresh_token';
 const USER_INFO_KEY = import.meta.env.VITE_USER_INFO_KEY || 'fitfood_user_info';
