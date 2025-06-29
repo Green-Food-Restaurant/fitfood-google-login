@@ -13,6 +13,8 @@ import Cart from "./pages/Cart";
 import { CartProvider } from "react-use-cart";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from '@/contexts/AuthContext';
+import Contato from "./pages/Contato";
+import Sobre from "./pages/Sobre";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +35,8 @@ const App = () => (
                 <Route path="/carrinho" element={<Cart />} />
                 <Route path="/cart" element={<Navigate to="/carrinho" />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/contato" element={<Contato />} />
+                <Route path="/sobre" element={<Sobre />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
