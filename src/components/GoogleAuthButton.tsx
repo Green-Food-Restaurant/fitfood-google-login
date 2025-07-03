@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { GoogleLogin } from '@react-oauth/google';
@@ -20,6 +20,28 @@ interface GoogleAuthButtonProps {
 const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false }) => {
   const navigate = useNavigate();
   const { login, loading, error } = useAuth();
+  const [googleScriptLoaded, setGoogleScriptLoaded] = useState<boolean>(false);
+  const [googleScriptError, setGoogleScriptError] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Verificar se o script do Google foi carregado
+    const checkGoogleScript = () => {
+      if (window.google && window.google.accounts) {
+        console.log('Script do Google carregado com sucesso');
+        setGoogleScriptLoaded(true);
+        setGoogleScriptError(false);
+      } else {
+        console.error('Script do Google não foi carregado');
+        setGoogleScriptLoaded(false);
+        setGoogleScriptError(true);
+      }
+    };
+
+    // Verificar após um tempo para dar chance de carregar
+    const timer = setTimeout(checkGoogleScript, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLoginSuccess = async (credentialResponse: CredentialResponse): Promise<void> => {
     try {
@@ -39,15 +61,16 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
         // Navegar para a página inicial após login bem-sucedido
         navigate('/home');
         toast.success(`Login realizado com sucesso! ${rememberMe ? 'Você permanecerá conectado.' : ''}`);
-      } catch (loginError: any) {
+      } catch (loginError: unknown) {
         console.error('Erro durante o processo de login:', loginError);
         
         // Mensagens de erro mais específicas
-        if (loginError?.message?.includes('network')) {
+        const error = loginError as { message?: string; response?: { status?: number } };
+        if (error?.message?.includes('network')) {
           toast.error('Erro de conexão. Verifique sua internet e tente novamente.');
-        } else if (loginError?.response?.status === 401) {
+        } else if (error?.response?.status === 401) {
           toast.error('Credenciais inválidas ou expiradas.');
-        } else if (loginError?.response?.status === 403) {
+        } else if (error?.response?.status === 403) {
           toast.error('Você não tem permissão para acessar o sistema.');
         } else {
           toast.error('Ocorreu um erro durante o login. Tente novamente.');
@@ -70,24 +93,42 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
     toast.error('Falha na autenticação com o Google. Tente novamente.');
   };
 
+  const reloadPage = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="flex flex-col items-center">
       {loading && <span className="text-xs text-gray-500 mb-2">Carregando...</span>}
       {error && <div className="text-xs text-red-500 mb-2">{error}</div>}
       <div className="w-full max-w-xs mx-auto">
-        <GoogleLogin
-          onSuccess={handleLoginSuccess}
-          onError={handleLoginError}
-          useOneTap={false}
-          text="continue_with"
-          shape="pill"
-          size="large"
-          locale="pt-BR"
-          theme="filled_blue"
-          width="100%"
-          logo_alignment="left"
-          context="signin"
-        />
+        {!googleScriptError ? (
+          <GoogleLogin
+            onSuccess={handleLoginSuccess}
+            onError={handleLoginError}
+            useOneTap={false}
+            text="continue_with"
+            shape="pill"
+            size="large"
+            locale="pt-BR"
+            theme="filled_blue"
+            width="100%"
+            logo_alignment="left"
+            context="signin"
+          />
+        ) : (
+          <div className="text-center p-4 border border-gray-300 rounded-lg bg-gray-50">
+            <div className="text-sm text-gray-700 mb-3">
+              Não foi possível carregar o botão de login do Google.
+            </div>
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={reloadPage}
+            >
+              Tentar novamente
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

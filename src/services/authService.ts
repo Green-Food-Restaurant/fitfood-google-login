@@ -72,10 +72,21 @@ class AuthService {  /**
    */  async loginWithGoogle(idToken: string, rememberMe = false): Promise<User> {
     // eslint-disable-next-line no-useless-catch
     try {
+      console.log('Iniciando processo de login com Google');
+      
+      // Adicionar um pequeno delay para garantir que o token seja processado corretamente
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Corrigimos a URL para evitar duplicação do prefixo /api/v1
       const response = await httpService.post<AuthResponse>(`/google/login`, {
         idToken,
         rememberMe
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        withCredentials: import.meta.env.VITE_WITH_CREDENTIALS === 'true'
       });
       
       // Converter o formato da API para o formato interno da aplicação
@@ -86,6 +97,7 @@ class AuthService {  /**
       return userData;
     } catch (error) {
       // Removido backend simulado e fallback para produção
+      console.error('Erro durante autenticação com Google:', error);
       throw error;
     }
   }  /**
