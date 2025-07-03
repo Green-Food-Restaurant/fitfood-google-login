@@ -73,7 +73,7 @@ class AuthService {  /**
     // eslint-disable-next-line no-useless-catch
     try {
       // Corrigimos a URL para evitar duplicação do prefixo /api/v1
-      const response = await httpService.post<AuthResponse>(`/auth/google/login`, {
+      const response = await httpService.post<AuthResponse>(`/google/login`, {
         idToken,
         rememberMe
       });

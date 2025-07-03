@@ -15,12 +15,10 @@ services:
       - green-food-network
     # Se precisar de variáveis de ambiente
     environment:
-      - VITE_APP_ENV=production
-      - VITE_AUTH_API_URL=http://localhost:8080/api/auth
+      - NODE_ENV=production
+      - VITE_AUTH_API_URL=http://localhost:3001/api/v1/auth
       - VITE_PRODUCTS_API_URL=http://localhost:8082/v1/product
       - VITE_CHECKOUT_API_URL=http://localhost:8080/api/checkout
-      - VITE_USERS_API_URL=http://localhost:8080/api/users
-      - VITE_API_BASE_URL=http://localhost:8080/api
       - VITE_ENABLE_ADMIN_PANEL=true
       - VITE_ENABLE_CHECKOUT=true
       - VITE_TOKEN_KEY=fitfood_auth_token
@@ -34,17 +32,3 @@ services:
 networks:
   green-food-network:
     external: true
-NODE_ENV=production
-VITE_API_URL=http://ms-green-food-auth-v1:3001/api/v1
-VITE_AUTH_API_URL=http://localhost:8080/api/v1/auth
-VITE_PRODUCTS_API_URL=http://ms-gf-product-service-v1:8082/v1/product
-VITE_CHECKOUT_API_URL=http://ms-gf-checkout-service-v1:8080/api/checkout
-VITE_ENABLE_ADMIN_PANEL=true
-VITE_ENABLE_CHECKOUT=true
-VITE_REFRESH_TOKEN_KEY=fitfood_refresh_token
-VITE_REMEMBER_ME_KEY=fitfood_remember_me
-VITE_SESSION_TIMEOUT=1800000
-VITE_TOKEN_KEY=fitfood_auth_token
-VITE_USER_INFO_KEY=fitfood_user_info
-VITE_WITH_CREDENTIALS=false
-VITE_GOOGLE_CLIENT_ID=565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com

@@ -211,9 +211,14 @@ const Login = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <GoogleAuthButton rememberMe={rememberMe} />
+                <div className="flex flex-col items-center">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                    Entre com sua conta preferida
+                  </h3>
+                  <GoogleAuthButton rememberMe={rememberMe} />
+                </div>
                 
-                <div className="flex items-center space-x-2 mt-4">
+                <div className="flex items-center space-x-2 mt-4 justify-center">
                   <Checkbox 
                     id="rememberMe" 
                     checked={rememberMe} 
@@ -229,7 +234,7 @@ const Login = () => {
                 
                 <div className="text-center">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Login rápido e seguro com sua conta Google
+                    Acesso seguro e protegido
                   </span>
                 </div>
 
