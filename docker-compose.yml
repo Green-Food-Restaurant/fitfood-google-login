@@ -3,10 +3,10 @@ version: '3.8'
 services:
   # Serviço do frontend
   frontend:
-    image: dalexandrias/fitfood-web-frontend:latest
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    # image: dalexandrias/fitfood-web-frontend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: fitfood-frontend
     ports:
       - "3000:3000"
@@ -16,9 +16,9 @@ services:
     # Se precisar de variáveis de ambiente
     environment:
       - NODE_ENV=production
-      - VITE_AUTH_API_URL=http://localhost:3001/api/v1/auth
-      - VITE_PRODUCTS_API_URL=http://localhost:8082/v1/product
-      - VITE_CHECKOUT_API_URL=http://localhost:8080/api/checkout
+      - VITE_AUTH_API_URL=http://173.249.12.112:3001/api/v1/auth
+      - VITE_PRODUCTS_API_URL=http://173.249.12.112:8082/v1/product
+      - VITE_CHECKOUT_API_URL=http://173.249.12.112:8080/api/checkout
       - VITE_ENABLE_ADMIN_PANEL=true
       - VITE_ENABLE_CHECKOUT=true
       - VITE_TOKEN_KEY=fitfood_auth_token

@@ -84,10 +84,7 @@ class AuthService {  /**
       }, {
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+          'X-Requested-With': 'XMLHttpRequest'
         },
         withCredentials: import.meta.env.VITE_WITH_CREDENTIALS === 'true'
       });
@@ -99,10 +96,10 @@ class AuthService {  /**
       this.saveAuthData(response.token, response.refreshToken, userData, rememberMe);
       return userData;
     } catch (error) {
-      // Verificar se é um erro de CORS
+      // Verificar se é um erro de rede
       if (error instanceof Error && error.message.includes('Network Error')) {
-        console.error('[Auth] Erro de CORS detectado durante autenticação com Google');
-        throw new Error('Erro de conexão com o servidor de autenticação. Verifique a configuração de CORS.');
+        console.error('[Auth] Erro de rede detectado durante autenticação com Google');
+        throw new Error('Erro de conexão com o servidor de autenticação.');
       }
       
       console.error('Erro durante autenticação com Google:', error);

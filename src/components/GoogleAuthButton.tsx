@@ -67,9 +67,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
         // Mensagens de erro mais específicas
         const error = loginError as { message?: string; response?: { status?: number } };
         
-        if (error?.message?.includes('CORS')) {
-          toast.error('Erro de conexão com o servidor. Verifique a configuração de CORS.');
-        } else if (error?.message?.includes('network')) {
+        if (error?.message?.includes('network')) {
           toast.error('Erro de conexão. Verifique sua internet e tente novamente.');
         } else if (error?.response?.status === 401) {
           toast.error('Credenciais inválidas ou expiradas.');

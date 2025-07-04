@@ -46,30 +46,32 @@ class HttpService {
         const token = authService.getToken();
         
         // Adicionar cabeçalhos de segurança básicos a todas as requisições
-        config.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate';
-        config.headers['Pragma'] = 'no-cache';
-        config.headers['Expires'] = '0';
-        
-        // Adicionar token de autenticação se disponível
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        if (config.headers) {
+          config.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate';
+          config.headers['Pragma'] = 'no-cache';
+          config.headers['Expires'] = '0';
           
-          // Adicionar timestamp para prevenir ataques de replay
-          config.headers['X-Request-Timestamp'] = Date.now().toString();
-          
-          // Adicionar proteção CSRF para requisições não-GET que modificam dados
-          if (config.method !== 'get') {
-            const csrfToken = this.generateCSRFToken();
-            config.headers['X-CSRF-Token'] = csrfToken;
+          // Adicionar token de autenticação se disponível
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            
+            // Adicionar timestamp para prevenir ataques de replay
+            config.headers['X-Request-Timestamp'] = Date.now().toString();
+            
+            // Adicionar proteção CSRF para requisições não-GET que modificam dados
+            if (config.method !== 'get') {
+              const csrfToken = this.generateCSRFToken();
+              config.headers['X-CSRF-Token'] = csrfToken;
+            }
+            
+            // Adicionar identificador de requisição único
+            config.headers['X-Request-ID'] = `req-${crypto.randomUUID?.() || 
+              Math.random().toString(36).substring(2, 15)}`;
+            
+            // Assinar a requisição com token parcial para verificação
+            const tokenFragment = token.substring(token.length - 10);
+            config.headers['X-Auth-Check'] = tokenFragment;
           }
-          
-          // Adicionar identificador de requisição único
-          config.headers['X-Request-ID'] = `req-${crypto.randomUUID?.() || 
-            Math.random().toString(36).substring(2, 15)}`;
-          
-          // Assinar a requisição com token parcial para verificação
-          const tokenFragment = token.substring(token.length - 10);
-          config.headers['X-Auth-Check'] = tokenFragment;
         }
         
         return config;
@@ -100,12 +102,12 @@ class HttpService {
         return response;
       },
       async (error: AxiosError) => {
-        // Verificar se é um erro de rede (possível CORS)
+        // Verificar se é um erro de rede
         if (error.message === 'Network Error') {
-          console.error('[Auth] Provável erro de CORS detectado');
+          console.error('[Auth] Erro de rede detectado');
           console.error('Detalhes do erro:', error);
           
-          return Promise.reject(new Error('Erro de conexão com o servidor. Verifique se o CORS está configurado corretamente.'));
+          return Promise.reject(new Error('Erro de conexão com o servidor.'));
         }
         
         const originalRequest = error.config;
