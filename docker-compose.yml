@@ -26,7 +26,7 @@ services:
       - VITE_USER_INFO_KEY=fitfood_user_info
       - VITE_REMEMBER_ME_KEY=fitfood_remember_me
       - VITE_SESSION_TIMEOUT=1800000
-      - VITE_WITH_CREDENTIALS=false
+      - VITE_WITH_CREDENTIALS=true
       - VITE_GOOGLE_CLIENT_ID=565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com
 
 networks:

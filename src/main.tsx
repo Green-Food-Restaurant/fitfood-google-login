@@ -11,7 +11,6 @@ createRoot(document.getElementById("root")!).render(
       clientId={GOOGLE_CLIENT_ID}
       onScriptLoadError={() => console.error('Falha ao carregar script do Google OAuth')}
       onScriptLoadSuccess={() => console.log('Script do Google OAuth carregado com sucesso')}
-      nonce="fitfood-nonce"
       scriptAsync={true}
     >
       <App />

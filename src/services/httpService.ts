@@ -1,15 +1,16 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import authService from './authService';
 
 // Preferir variável de ambiente do Vite, com fallback para o valor padrão
-const API_URL = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001/api/v1/auth';
-const WITH_CREDENTIALS = import.meta.env.VITE_WITH_CREDENTIALS === 'false';
+const API_URL = import.meta.env.VITE_AUTH_API_URL || 'http://ms-green-food-auth-v1:3001/api/v1/auth';
+const WITH_CREDENTIALS = import.meta.env.VITE_WITH_CREDENTIALS === 'true';
 
 // Serviço que gerencia requisições HTTP autenticadas
 class HttpService {
   private api: AxiosInstance;
   private static instance: HttpService;
-  private constructor() {    this.api = axios.create({
+  private constructor() {
+    this.api = axios.create({
       baseURL: API_URL,
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +21,8 @@ class HttpService {
         'X-Frame-Options': 'DENY',
         'X-Permitted-Cross-Domain-Policies': 'none',
         'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'",
-        'Permissions-Policy': "camera=(), microphone=(), geolocation=()"
+        'Permissions-Policy': "camera=(), microphone=(), geolocation=()",
+        'X-Requested-With': 'XMLHttpRequest'
       },
       withCredentials: WITH_CREDENTIALS
     });
@@ -37,15 +39,11 @@ class HttpService {
   }
   // Configura interceptadores para injetar automaticamente tokens de autenticação
   // e lidar com erros de forma centralizada
-  private setupInterceptors(): void {    // Interceptador de requisição - adiciona token às requisições
+  private setupInterceptors(): void {
+    // Interceptador de requisição - adiciona token às requisições
     this.api.interceptors.request.use(
-      (config: AxiosRequestConfig) => {
+      (config: InternalAxiosRequestConfig) => {
         const token = authService.getToken();
-        
-        // Obter headers ou criar se não existirem
-        if (!config.headers) {
-          config.headers = {};
-        }
         
         // Adicionar cabeçalhos de segurança básicos a todas as requisições
         config.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate';
@@ -76,11 +74,13 @@ class HttpService {
         
         return config;
       },
-      (error: any) => {
+      (error: unknown) => {
         console.error('Erro na preparação da requisição:', error);
         return Promise.reject(error);
       }
-    );// Interceptador de resposta - trata erros de autenticação e verificação CSRF
+    );
+    
+    // Interceptador de resposta - trata erros de autenticação e verificação CSRF
     this.api.interceptors.response.use(
       (response: AxiosResponse) => {
         // Verificar se a resposta possui um token CSRF para validar
@@ -100,16 +100,24 @@ class HttpService {
         return response;
       },
       async (error: AxiosError) => {
+        // Verificar se é um erro de rede (possível CORS)
+        if (error.message === 'Network Error') {
+          console.error('[Auth] Provável erro de CORS detectado');
+          console.error('Detalhes do erro:', error);
+          
+          return Promise.reject(new Error('Erro de conexão com o servidor. Verifique se o CORS está configurado corretamente.'));
+        }
+        
         const originalRequest = error.config;
         
         // Verificar se é erro 401 (Não Autorizado) e não é uma tentativa de refresh
         if (error.response?.status === 401 && 
             originalRequest && 
-            !(originalRequest as any)._retry) {
+            !(originalRequest as Record<string, unknown>)._retry) {
           
           try {
             // Marcar que esta requisição já passou por retry para evitar loops infinitos
-            (originalRequest as any)._retry = true;
+            (originalRequest as Record<string, unknown>)._retry = true;
             
             // Disparar evento para notificar que o token expirou
             const refreshEvent = new CustomEvent('auth:tokenExpired');
@@ -163,7 +171,9 @@ class HttpService {
         return Promise.reject(error);
       }
     );
-  }  // Gera um token CSRF mais seguro
+  }
+  
+  // Gera um token CSRF mais seguro
   private generateCSRFToken(): string {
     // Gerar um array de bytes aleatórios
     const randomBytes = new Uint8Array(32);
@@ -186,28 +196,53 @@ class HttpService {
 
   // Métodos para fazer requisições HTTP
   public async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.get<T>(url, config);
-    return response.data;
+    try {
+      const response = await this.api.get<T>(url, config);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro na requisição GET para ${url}:`, error);
+      throw error;
+    }
   }
 
-  public async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.post<T>(url, data, config);
-    return response.data;
+  public async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    try {
+      const response = await this.api.post<T>(url, data, config);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro na requisição POST para ${url}:`, error);
+      throw error;
+    }
   }
 
-  public async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.put<T>(url, data, config);
-    return response.data;
+  public async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    try {
+      const response = await this.api.put<T>(url, data, config);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro na requisição PUT para ${url}:`, error);
+      throw error;
+    }
   }
 
   public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.delete<T>(url, config);
-    return response.data;
+    try {
+      const response = await this.api.delete<T>(url, config);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro na requisição DELETE para ${url}:`, error);
+      throw error;
+    }
   }
 
-  public async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.patch<T>(url, data, config);
-    return response.data;
+  public async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    try {
+      const response = await this.api.patch<T>(url, data, config);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro na requisição PATCH para ${url}:`, error);
+      throw error;
+    }
   }
 }
 
