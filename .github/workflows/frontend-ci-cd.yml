@@ -47,19 +47,7 @@ jobs:
         run: |
           STATUS="${{ steps.install.outcome }}"
           if [ "$STATUS" == "success" ]; then
-            curl -H "Content-Type: application/json" -X POST -d '{
-              "embeds": [{
-                "title": "✅ Dependências instaladas",
-                "description": "As dependências do projeto foram instaladas com sucesso",
-                "color": ${{ env.SUCCESS_COLOR }},
-                "fields": [
-                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
-                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
-                  {"name": "Etapa", "value": "Instalação", "inline": true}
-                ],
-                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
-              }]
-            }' "$DISCORD_WEBHOOK"
+            echo "✅ Dependências instaladas com sucesso"
           else
             curl -H "Content-Type: application/json" -X POST -d '{
               "embeds": [{
@@ -76,68 +64,68 @@ jobs:
             }' "$DISCORD_WEBHOOK"
           fi
       
-      - name: Verificação de variáveis de ambiente
-        id: env_check
-        run: |
-          # Verifica se o arquivo env.example existe
-          if [ -f "env.example" ]; then
-            echo "✅ Arquivo env.example encontrado"
+      # - name: Verificação de variáveis de ambiente
+      #   id: env_check
+      #   run: |
+      #     # Verifica se o arquivo env.example existe
+      #     if [ -f "env.example" ]; then
+      #       echo "✅ Arquivo env.example encontrado"
             
-            # Extrai as variáveis necessárias do env.example
-            ENV_VARS=$(grep -v "^#" env.example | grep "=" | cut -d "=" -f1)
-            MISSING_VARS=()
+      #       # Extrai as variáveis necessárias do env.example
+      #       ENV_VARS=$(grep -v "^#" env.example | grep "=" | cut -d "=" -f1)
+      #       MISSING_VARS=()
             
-            # Verifica se as variáveis estão definidas no Dockerfile
-            for VAR in $ENV_VARS; do
-              if ! grep -q "$VAR" Dockerfile; then
-                MISSING_VARS+=("$VAR")
-              fi
-            done
+      #       # Verifica se as variáveis estão definidas no Dockerfile
+      #       for VAR in $ENV_VARS; do
+      #         if ! grep -q "$VAR" Dockerfile; then
+      #           MISSING_VARS+=("$VAR")
+      #         fi
+      #       done
             
-            if [ ${#MISSING_VARS[@]} -eq 0 ]; then
-              echo "✅ Todas as variáveis de ambiente necessárias estão definidas no Dockerfile"
-              echo "env_check_status=success" >> $GITHUB_OUTPUT
-            else
-              echo "⚠️ As seguintes variáveis de ambiente estão faltando no Dockerfile:"
-              printf "  - %s\n" "${MISSING_VARS[@]}"
-              echo "env_check_status=warning" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "⚠️ Arquivo env.example não encontrado"
-            echo "env_check_status=warning" >> $GITHUB_OUTPUT
-          fi
+      #       if [ ${#MISSING_VARS[@]} -eq 0 ]; then
+      #         echo "✅ Todas as variáveis de ambiente necessárias estão definidas no Dockerfile"
+      #         echo "env_check_status=success" >> $GITHUB_OUTPUT
+      #       else
+      #         echo "⚠️ As seguintes variáveis de ambiente estão faltando no Dockerfile:"
+      #         printf "  - %s\n" "${MISSING_VARS[@]}"
+      #         echo "env_check_status=warning" >> $GITHUB_OUTPUT
+      #       fi
+      #     else
+      #       echo "⚠️ Arquivo env.example não encontrado"
+      #       echo "env_check_status=warning" >> $GITHUB_OUTPUT
+      #     fi
       
-      - name: Notificação - Verificação de variáveis de ambiente
-        if: always()
-        run: |
-          STATUS="${{ steps.env_check.outputs.env_check_status }}"
-          if [ "$STATUS" == "success" ]; then
-            curl -H "Content-Type: application/json" -X POST -d '{
-              "embeds": [{
-                "title": "✅ Variáveis de ambiente verificadas",
-                "description": "Todas as variáveis de ambiente necessárias estão configuradas",
-                "color": ${{ env.SUCCESS_COLOR }},
-                "fields": [
-                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
-                  {"name": "Etapa", "value": "Verificação de Ambiente", "inline": true}
-                ],
-                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
-              }]
-            }' "$DISCORD_WEBHOOK"
-          else
-            curl -H "Content-Type: application/json" -X POST -d '{
-              "embeds": [{
-                "title": "⚠️ Atenção nas variáveis de ambiente",
-                "description": "Algumas variáveis de ambiente podem estar faltando ou incorretas",
-                "color": ${{ env.WARNING_COLOR }},
-                "fields": [
-                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
-                  {"name": "Etapa", "value": "Verificação de Ambiente", "inline": true}
-                ],
-                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
-              }]
-            }' "$DISCORD_WEBHOOK"
-          fi
+      # - name: Notificação - Verificação de variáveis de ambiente
+      #   if: always()
+      #   run: |
+      #     STATUS="${{ steps.env_check.outputs.env_check_status }}"
+      #     if [ "$STATUS" == "success" ]; then
+      #       curl -H "Content-Type: application/json" -X POST -d '{
+      #         "embeds": [{
+      #           "title": "✅ Variáveis de ambiente verificadas",
+      #           "description": "Todas as variáveis de ambiente necessárias estão configuradas",
+      #           "color": ${{ env.SUCCESS_COLOR }},
+      #           "fields": [
+      #             {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+      #             {"name": "Etapa", "value": "Verificação de Ambiente", "inline": true}
+      #           ],
+      #           "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+      #         }]
+      #       }' "$DISCORD_WEBHOOK"
+      #     else
+      #       curl -H "Content-Type: application/json" -X POST -d '{
+      #         "embeds": [{
+      #           "title": "⚠️ Atenção nas variáveis de ambiente",
+      #           "description": "Algumas variáveis de ambiente podem estar faltando ou incorretas",
+      #           "color": ${{ env.WARNING_COLOR }},
+      #           "fields": [
+      #             {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+      #             {"name": "Etapa", "value": "Verificação de Ambiente", "inline": true}
+      #           ],
+      #           "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+      #         }]
+      #       }' "$DISCORD_WEBHOOK"
+      #     fi
       
       - name: Análise de código (Lint)
         id: lint
@@ -149,19 +137,7 @@ jobs:
         run: |
           STATUS="${{ steps.lint.outcome }}"
           if [ "$STATUS" == "success" ]; then
-            curl -H "Content-Type: application/json" -X POST -d '{
-              "embeds": [{
-                "title": "✅ Análise de código concluída",
-                "description": "A análise de código foi concluída sem erros",
-                "color": ${{ env.SUCCESS_COLOR }},
-                "fields": [
-                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
-                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
-                  {"name": "Etapa", "value": "Lint", "inline": true}
-                ],
-                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
-              }]
-            }' "$DISCORD_WEBHOOK"
+            echo "✅ Análise de código concluída com sucesso"
           else
             curl -H "Content-Type: application/json" -X POST -d '{
               "embeds": [{
@@ -277,18 +253,7 @@ jobs:
         run: |
           STATUS="${{ steps.login.outcome }}"
           if [ "$STATUS" == "success" ]; then
-            curl -H "Content-Type: application/json" -X POST -d '{
-              "embeds": [{
-                "title": "✅ Login no Docker Hub realizado",
-                "description": "Autenticação no Docker Hub concluída com sucesso",
-                "color": ${{ env.SUCCESS_COLOR }},
-                "fields": [
-                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
-                  {"name": "Etapa", "value": "Docker Login", "inline": true}
-                ],
-                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
-              }]
-            }' "$DISCORD_WEBHOOK"
+            echo "✅ Login no Docker Hub realizado com sucesso"
           else
             curl -H "Content-Type: application/json" -X POST -d '{
               "embeds": [{
