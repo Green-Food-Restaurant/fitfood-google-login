@@ -283,11 +283,22 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
+      - name: Obtenção da tag principal
+        id: get_tag
+        run: |
+          TAGS='${{ steps.meta.outputs.tags }}'
+          MAIN_IMAGE=$(echo "$TAGS" | head -n1)
+          MAIN_TAG=$(echo "$MAIN_IMAGE" | awk -F: '{print $NF}')
+          if [ "$MAIN_TAG" = "main" ]; then
+            MAIN_TAG="latest"
+          fi
+          echo "image_tag=$MAIN_TAG" >> $GITHUB_OUTPUT
+      
       - name: Análise de vulnerabilidades com Trivy
         id: trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ steps.meta.outputs.tags }}'
+          image-ref: '${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.get_tag.outputs.image_tag }}'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
@@ -325,17 +336,6 @@ jobs:
               }]
             }' "$DISCORD_WEBHOOK"
           fi
-      
-      - name: Obtenção da tag principal
-        id: get_tag
-        run: |
-          TAGS='${{ steps.meta.outputs.tags }}'
-          MAIN_IMAGE=$(echo "$TAGS" | head -n1)
-          MAIN_TAG=$(echo "$MAIN_IMAGE" | awk -F: '{print $NF}')
-          if [ "$MAIN_TAG" = "main" ]; then
-            MAIN_TAG="latest"
-          fi
-          echo "image_tag=$MAIN_TAG" >> $GITHUB_OUTPUT
       
       - name: Notificação - Publicação da imagem Docker
         if: always()
@@ -552,4 +552,4 @@ jobs:
               ],
               "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
             }]
-          }' "$DISCORD_WEBHOOK" 
+          }' "$DISCORD_WEBHOOK"
