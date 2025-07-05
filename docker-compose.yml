@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Serviço do frontend
   frontend:
-    # image: dalexandrias/fitfood-web-frontend:latest
+    # image: dalexandrias/greenfood-web-frontend:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,15 +13,15 @@ services:
         - VITE_CHECKOUT_API_URL=http://checkout.greenfood.devarchitects.tech/v1/checkout
         - VITE_ENABLE_ADMIN_PANEL=true
         - VITE_ENABLE_CHECKOUT=true
-        - VITE_TOKEN_KEY=fitfood_auth_token
-        - VITE_REFRESH_TOKEN_KEY=fitfood_refresh_token
-        - VITE_USER_INFO_KEY=fitfood_user_info
-        - VITE_REMEMBER_ME_KEY=fitfood_remember_me
+        - VITE_TOKEN_KEY=greenfood_auth_token
+        - VITE_REFRESH_TOKEN_KEY=greenfood_refresh_token
+        - VITE_USER_INFO_KEY=greenfood_user_info
+        - VITE_REMEMBER_ME_KEY=greenfood_remember_me
         - VITE_SESSION_TIMEOUT=1800000
         - VITE_WITH_CREDENTIALS=false
         - VITE_GOOGLE_CLIENT_ID=565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com
         - VITE_APP_ENV=production
-    container_name: fitfood-frontend
+    container_name: greenfood-frontend
     ports:
       - "3000:3000"
     restart: unless-stopped

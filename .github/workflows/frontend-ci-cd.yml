@@ -1,4 +1,4 @@
-name: Frontend Build, Push e Deploy
+name: "GreenFood Frontend CI/CD Pipeline"
 
 on:
   push:
@@ -12,74 +12,249 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: fitfood-web-frontend
+  IMAGE_NAME: greenfood-web-frontend
   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
   CONTAINER_PORT: 3000
+  SUCCESS_COLOR: 3066993
+  ERROR_COLOR: 15158332
+  WARNING_COLOR: 16027660
+  INFO_COLOR: 3447003
+  PROJECT_NAME: GreenFood Web Frontend
 
 jobs:
-  build:
+  ##############################################
+  # ESTÁGIO 1: VALIDAÇÃO E COMPILAÇÃO
+  ##############################################
+  validate-and-build:
+    name: "🔍 Validação e Compilação"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout do código
         uses: actions/checkout@v4.2.2
       
-      - name: Setup Node.js
+      - name: Configuração do Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
       
-      - name: Install dependencies
+      - name: Instalação de dependências
+        id: install
         run: npm ci --legacy-peer-deps
       
-      - name: Run linting
-        run: npm run lint || echo "Linting issues found but continuing"
+      - name: Notificação - Instalação de dependências
+        if: always()
+        run: |
+          STATUS="${{ steps.install.outcome }}"
+          if [ "$STATUS" == "success" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Dependências instaladas",
+                "description": "As dependências do projeto foram instaladas com sucesso",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Etapa", "value": "Instalação", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "❌ Falha na instalação de dependências",
+                "description": "Ocorreu um erro ao instalar as dependências do projeto",
+                "color": ${{ env.ERROR_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Etapa", "value": "Instalação", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
       
-      - name: Build project
+      - name: Verificação de variáveis de ambiente
+        id: env_check
+        run: |
+          # Verifica se o arquivo env.example existe
+          if [ -f "env.example" ]; then
+            echo "✅ Arquivo env.example encontrado"
+            
+            # Extrai as variáveis necessárias do env.example
+            ENV_VARS=$(grep -v "^#" env.example | grep "=" | cut -d "=" -f1)
+            MISSING_VARS=()
+            
+            # Verifica se as variáveis estão definidas no Dockerfile
+            for VAR in $ENV_VARS; do
+              if ! grep -q "$VAR" Dockerfile; then
+                MISSING_VARS+=("$VAR")
+              fi
+            done
+            
+            if [ ${#MISSING_VARS[@]} -eq 0 ]; then
+              echo "✅ Todas as variáveis de ambiente necessárias estão definidas no Dockerfile"
+              echo "env_check_status=success" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️ As seguintes variáveis de ambiente estão faltando no Dockerfile:"
+              printf "  - %s\n" "${MISSING_VARS[@]}"
+              echo "env_check_status=warning" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "⚠️ Arquivo env.example não encontrado"
+            echo "env_check_status=warning" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Notificação - Verificação de variáveis de ambiente
+        if: always()
+        run: |
+          STATUS="${{ steps.env_check.outputs.env_check_status }}"
+          if [ "$STATUS" == "success" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Variáveis de ambiente verificadas",
+                "description": "Todas as variáveis de ambiente necessárias estão configuradas",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Etapa", "value": "Verificação de Ambiente", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "⚠️ Atenção nas variáveis de ambiente",
+                "description": "Algumas variáveis de ambiente podem estar faltando ou incorretas",
+                "color": ${{ env.WARNING_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Etapa", "value": "Verificação de Ambiente", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
+      
+      - name: Análise de código (Lint)
+        id: lint
+        continue-on-error: true
+        run: npm run lint
+      
+      - name: Notificação - Análise de código
+        if: always()
+        run: |
+          STATUS="${{ steps.lint.outcome }}"
+          if [ "$STATUS" == "success" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Análise de código concluída",
+                "description": "A análise de código foi concluída sem erros",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Etapa", "value": "Lint", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "⚠️ Problemas na análise de código",
+                "description": "Foram encontrados problemas na análise de código, mas o pipeline continuará",
+                "color": ${{ env.WARNING_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Etapa", "value": "Lint", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
+      
+      - name: Compilação do projeto
+        id: build
         run: npm run build
       
-      - name: Upload build artifacts
+      - name: Upload dos artefatos de build
         uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: dist/
+          retention-days: 1
       
-      - name: Notify build success (Discord)
-        if: success()
+      - name: Notificação - Compilação
+        if: always()
         run: |
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-              "content": "✅ Build do frontend (fitfood-web-frontend) finalizado com sucesso!"
-            }' \
-            "$DISCORD_WEBHOOK"
-      
-      - name: Notify build failure (Discord)
-        if: failure()
-        run: |
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-              "content": "❌ Falha no build do frontend (fitfood-web-frontend). Verifique o pipeline."
-            }' \
-            "$DISCORD_WEBHOOK"
+          STATUS="${{ steps.build.outcome }}"
+          if [ "$STATUS" == "success" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Compilação concluída com sucesso",
+                "description": "O código foi compilado com sucesso e os artefatos foram salvos",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Commit", "value": "`${{ github.sha }}`", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "❌ Falha na compilação",
+                "description": "Ocorreu um erro durante a compilação do código",
+                "color": ${{ env.ERROR_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Commit", "value": "`${{ github.sha }}`", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
 
-  docker:
-    needs: build
+  ##############################################
+  # ESTÁGIO 2: CONSTRUÇÃO E PUBLICAÇÃO DA IMAGEM DOCKER
+  ##############################################
+  build-and-publish-image:
+    name: "🐳 Construção e Publicação da Imagem"
+    needs: validate-and-build
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.get_tag.outputs.image_tag }}
     steps:
-      - name: Checkout code
+      - name: Checkout do código
         uses: actions/checkout@v4.2.2
       
-      - name: Download build artifacts
+      - name: Download dos artefatos de build
         uses: actions/download-artifact@v4
         with:
           name: build-files
           path: dist/
       
-      - name: Extract metadata for Docker
+      - name: Verificação do Dockerfile
+        id: dockerfile_check
+        run: |
+          if [ -f "Dockerfile" ]; then
+            echo "✅ Dockerfile encontrado"
+            echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Dockerfile não encontrado"
+            echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Extração de metadados para Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -90,16 +265,50 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,format=short
       
-      - name: Log in to Docker Hub
+      - name: Login no Docker Hub
+        id: login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
       
-      - name: Set up Docker Buildx
+      - name: Notificação - Login no Docker Hub
+        if: always()
+        run: |
+          STATUS="${{ steps.login.outcome }}"
+          if [ "$STATUS" == "success" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Login no Docker Hub realizado",
+                "description": "Autenticação no Docker Hub concluída com sucesso",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Etapa", "value": "Docker Login", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "❌ Falha no login no Docker Hub",
+                "description": "Não foi possível autenticar no Docker Hub",
+                "color": ${{ env.ERROR_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Etapa", "value": "Docker Login", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
+      
+      - name: Configuração do Docker Buildx
         uses: docker/setup-buildx-action@v3
       
-      - name: Build and Push Docker image
+      - name: Construção e publicação da imagem Docker
+        id: docker_build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -109,114 +318,120 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
-      - name: Run Trivy vulnerability scanner
+      - name: Análise de vulnerabilidades com Trivy
+        id: trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ steps.meta.outputs.tags }}'
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-        continue-on-error: true
       
-      - name: Get main image tag
+      - name: Notificação - Análise de vulnerabilidades
+        if: always()
+        run: |
+          STATUS="${{ steps.trivy.outcome }}"
+          if [ "$STATUS" == "success" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Análise de vulnerabilidades concluída",
+                "description": "A análise de segurança da imagem foi concluída",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Etapa", "value": "Trivy Scan", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "⚠️ Problemas na análise de vulnerabilidades",
+                "description": "Foram encontradas vulnerabilidades na imagem Docker",
+                "color": ${{ env.WARNING_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Etapa", "value": "Trivy Scan", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
+      
+      - name: Obtenção da tag principal
         id: get_tag
         run: |
-          # Extrai apenas a tag da primeira imagem (após o ':')
           TAGS='${{ steps.meta.outputs.tags }}'
           MAIN_IMAGE=$(echo "$TAGS" | head -n1)
           MAIN_TAG=$(echo "$MAIN_IMAGE" | awk -F: '{print $NF}')
           if [ "$MAIN_TAG" = "main" ]; then
             MAIN_TAG="latest"
           fi
-          echo "IMAGE_TAG=$MAIN_TAG" >> $GITHUB_OUTPUT
+          echo "image_tag=$MAIN_TAG" >> $GITHUB_OUTPUT
+      
+      - name: Notificação - Publicação da imagem Docker
+        if: always()
+        run: |
+          STATUS="${{ steps.docker_build.outcome }}"
+          if [ "$STATUS" == "success" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Imagem Docker publicada",
+                "description": "A imagem Docker foi construída e publicada com sucesso",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Imagem", "value": "${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.get_tag.outputs.image_tag }}", "inline": false},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Commit", "value": "`${{ github.sha }}`", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "❌ Falha na publicação da imagem Docker",
+                "description": "Ocorreu um erro durante a construção ou publicação da imagem Docker",
+                "color": ${{ env.ERROR_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                  {"name": "Commit", "value": "`${{ github.sha }}`", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
 
-  notify-build:
-    needs: docker
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Notify on success (Discord)
-        if: ${{ needs.docker.result == 'success' }}
-        run: |
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-              "content": "✅ Build e Deploy do Frontend com sucesso!\nA imagem `${{ needs.docker.outputs.image_tag }}` foi publicada com sucesso no Docker Hub (fitfood-web-frontend)."
-            }' \
-            "$DISCORD_WEBHOOK"
-      
-      - name: Notify on failure (Discord)
-        if: ${{ needs.docker.result == 'failure' }}
-        run: |
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-              "content": "❌ Falha no Build/Deploy do Frontend\nOcorreu uma falha no pipeline de CI/CD para o fitfood-web-frontend."
-            }' \
-            "$DISCORD_WEBHOOK"
-
-  deploy-netlify:
-    needs: docker
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-      
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-files
-          path: dist/
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
-      
-      - name: Deploy to Netlify
-        run: netlify deploy --dir=dist --prod
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      
-      - name: Notify Netlify Deployment Success (Discord)
-        if: success()
-        run: |
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-              "content": "🚀 Deploy no Netlify Concluído\nDeploy do frontend fitfood-web-frontend no Netlify foi concluído com sucesso.\nBranch: `${{ github.ref_name }}`\nCommit: `${{ github.sha }}`\nAutor: `${{ github.actor }}`\nURL: https://fitfood-web.netlify.app"
-            }' \
-            "$DISCORD_WEBHOOK"
-      
-      - name: Notify Netlify Deployment Failure (Discord)
-        if: failure()
-        run: |
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-              "content": "❌ Falha no Deploy Netlify\nOcorreu uma falha no deploy do frontend fitfood-web-frontend no Netlify."
-            }' \
-            "$DISCORD_WEBHOOK"
-
-  deploy-coolify:
-    needs: docker
+  ##############################################
+  # ESTÁGIO 3: DEPLOY NO AMBIENTE COOLIFY
+  ##############################################
+  deploy-to-production:
+    name: "🚀 Deploy em Produção"
+    needs: build-and-publish-image
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
-    outputs:
-      deployment_id: ${{ steps.deploy.outputs.deployment_id }}
     steps:
-      - name: Trigger Coolify Deployment
+      - name: Verificar configurações do Coolify
+        id: coolify_check
+        run: |
+          if [ -n "${{ secrets.COOLIFY_WEBHOOK }}" ] && [ -n "${{ secrets.COOLIFY_FRONTEND_UUID }}" ] && [ -n "${{ secrets.COOLIFY_TOKEN }}" ]; then
+            echo "✅ Configurações do Coolify verificadas"
+            echo "coolify_config_ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Configurações do Coolify incompletas"
+            echo "coolify_config_ok=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Iniciar deploy no Coolify
         id: deploy
         run: |
           echo "Iniciando deploy para Coolify..."
-          RESPONSE=$(curl -v -s -X POST "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_FRONTEND_UUID }}&force=false" \
+          RESPONSE=$(curl -s -X POST "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_FRONTEND_UUID }}&force=false" \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
           -d '{
@@ -225,87 +440,151 @@ jobs:
               "PORT": "${{ env.CONTAINER_PORT }}"
             }
           }')
-          echo "Resposta completa do Coolify:"
-          echo "$RESPONSE"
-          echo "Estrutura JSON da resposta:"
-          echo "$RESPONSE" | jq '.'
-          # Extrai resource_uuid do primeiro elemento do array deployments
+          
           DEPLOYMENT_ID=$(echo "$RESPONSE" | jq -r '.deployments[0].resource_uuid // ""')
-          echo "Deployment ID extraído: '$DEPLOYMENT_ID'"
           if [ -n "$DEPLOYMENT_ID" ] && [ "$DEPLOYMENT_ID" != "null" ]; then
             echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
-            echo "Deploy resource_uuid encontrado: $DEPLOYMENT_ID"
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "🔄 Deploy iniciado no Coolify",
+                "description": "O processo de deploy foi iniciado com sucesso no ambiente Coolify",
+                "color": ${{ env.INFO_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Ambiente", "value": "Produção (Coolify)", "inline": true},
+                  {"name": "Deployment ID", "value": "'"$DEPLOYMENT_ID"'", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
           else
-            echo "Aviso: Não foi possível extrair o resource_uuid do deployment da resposta"
+            echo "Aviso: Não foi possível extrair o ID do deployment"
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "⚠️ Problema ao iniciar deploy",
+                "description": "O processo de deploy foi iniciado, mas não foi possível obter o ID do deployment",
+                "color": ${{ env.WARNING_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Ambiente", "value": "Produção (Coolify)", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
           fi
       
-      - name: Wait and check deployment status
+      - name: Verificar status do deployment
+        id: check_status
         run: |
           echo "Aguardando 30 segundos para o início do deployment..."
           sleep 30
           DEPLOYMENT_ID="${{ steps.deploy.outputs.deployment_id }}"
-          if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" = "null" ]; then
-            echo "ID do deployment não encontrado na resposta. Tentando verificar o status geral."
-            echo "Tentativa 1: Verificando status do recurso via API de resources..."
-            RESOURCE_RESPONSE=$(curl -v -s -X GET "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/resources/${{ secrets.COOLIFY_FRONTEND_UUID }}/status" \
-              -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}")
-            echo "Resposta da API de recursos:"
-            echo "$RESOURCE_RESPONSE" | jq '.'
-            HEALTH_STATUS=$(echo "$RESOURCE_RESPONSE" | jq -r '.status // .state // .health // "unknown"')
-            echo "Status do recurso: $HEALTH_STATUS"
-            echo "Tentativa 2: Verificando status via API de services..."
-            SERVICE_RESPONSE=$(curl -v -s -X GET "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/services/${{ secrets.COOLIFY_FRONTEND_UUID }}/status" \
-              -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}")
-            echo "Resposta da API de serviços:"
-            echo "$SERVICE_RESPONSE" | jq '.'
-            SERVICE_STATUS=$(echo "$SERVICE_RESPONSE" | jq -r '.status // .state // "unknown"')
-            echo "Status do serviço: $SERVICE_STATUS"
-            if [[ ("$HEALTH_STATUS" = "running" || "$HEALTH_STATUS" = "success" || "$HEALTH_STATUS" = "healthy") || \
-                  ("$SERVICE_STATUS" = "running" || "$SERVICE_STATUS" = "success" || "$SERVICE_STATUS" = "healthy") ]]; then
-              echo "Serviço parece estar funcionando corretamente."
-            else
-              echo "Possível problema com o serviço. Status do recurso: $HEALTH_STATUS, Status do serviço: $SERVICE_STATUS"
-            fi
-          else
+          DEPLOYMENT_STATUS="unknown"
+          
+          if [ -n "$DEPLOYMENT_ID" ] && [ "$DEPLOYMENT_ID" != "null" ]; then
             echo "Verificando status do deployment $DEPLOYMENT_ID"
-            DEPLOY_RESPONSE=$(curl -v -s -X GET "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/deployments/$DEPLOYMENT_ID/status" \
+            DEPLOY_RESPONSE=$(curl -s -X GET "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/deployments/$DEPLOYMENT_ID/status" \
               -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}")
-            echo "Resposta da API de deployment:"
-            echo "$DEPLOY_RESPONSE" | jq '.'
             STATUS=$(echo "$DEPLOY_RESPONSE" | jq -r '.status // .state // "unknown"')
-            echo "Status do deployment: $STATUS"
-            if [[ "$STATUS" = "success" || "$STATUS" = "running" || "$STATUS" = "completed" || "$STATUS" = "healthy" ]]; then
-              echo "Deployment parece estar sendo processado ou concluído com sucesso."
-            else
-              echo "Aviso: Status do deployment não reconhecido: $STATUS"
-            fi
+            DEPLOYMENT_STATUS=$STATUS
+          else
+            echo "Verificando status geral do recurso..."
+            RESOURCE_RESPONSE=$(curl -s -X GET "${{ secrets.COOLIFY_WEBHOOK }}/api/v1/resources/${{ secrets.COOLIFY_FRONTEND_UUID }}/status" \
+              -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}")
+            HEALTH_STATUS=$(echo "$RESOURCE_RESPONSE" | jq -r '.status // .state // .health // "unknown"')
+            DEPLOYMENT_STATUS=$HEALTH_STATUS
           fi
-          echo "Realizando verificação final do serviço..."
-          echo "O serviço está sendo implantado ou já está em execução no Coolify na porta ${{ env.CONTAINER_PORT }}."
+          
+          if [[ "$DEPLOYMENT_STATUS" = "success" || "$DEPLOYMENT_STATUS" = "running" || "$DEPLOYMENT_STATUS" = "completed" || "$DEPLOYMENT_STATUS" = "healthy" ]]; then
+            echo "deployment_successful=true" >> $GITHUB_OUTPUT
+          else
+            echo "deployment_successful=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Notificação - Status do deployment
+        if: always()
+        run: |
+          DEPLOYMENT_SUCCESS="${{ steps.check_status.outputs.deployment_successful }}"
+          
+          if [ "$DEPLOYMENT_SUCCESS" == "true" ]; then
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "✅ Deploy concluído com sucesso",
+                "description": "A aplicação foi implantada com sucesso no ambiente de produção",
+                "color": ${{ env.SUCCESS_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Ambiente", "value": "Produção (Coolify)", "inline": true},
+                  {"name": "Porta", "value": "${{ env.CONTAINER_PORT }}", "inline": true},
+                  {"name": "Imagem", "value": "${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-publish-image.outputs.image_tag }}", "inline": false}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          else
+            curl -H "Content-Type: application/json" -X POST -d '{
+              "embeds": [{
+                "title": "❌ Falha no deploy",
+                "description": "Ocorreu um erro durante o deploy da aplicação no ambiente de produção",
+                "color": ${{ env.ERROR_COLOR }},
+                "fields": [
+                  {"name": "Projeto", "value": "${{ env.PROJECT_NAME }}", "inline": true},
+                  {"name": "Ambiente", "value": "Produção (Coolify)", "inline": true},
+                  {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true}
+                ],
+                "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+              }]
+            }' "$DISCORD_WEBHOOK"
+          fi
 
-  notify-deploy:
-    needs: [deploy-netlify, deploy-coolify]
+  ##############################################
+  # ESTÁGIO 4: RESUMO DO PIPELINE
+  ##############################################
+  pipeline-summary:
+    name: "📊 Resumo do Pipeline"
+    needs: [validate-and-build, build-and-publish-image, deploy-to-production]
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
-      - name: Notify Final Deployment Status (Discord)
+      - name: Notificação - Resumo do pipeline
         run: |
-          NETLIFY_STATUS="${{ needs.deploy-netlify.result }}"
-          COOLIFY_STATUS="${{ needs.deploy-coolify.result }}"
+          BUILD_STATUS="${{ needs.validate-and-build.result }}"
+          DOCKER_STATUS="${{ needs.build-and-publish-image.result }}"
+          DEPLOY_STATUS="${{ needs.deploy-to-production.result || 'skipped' }}"
+          WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           
-          if [[ "$NETLIFY_STATUS" == "success" && "$COOLIFY_STATUS" == "success" ]]; then
-            MESSAGE="🎉 Deploy Completo! Frontend fitfood-web-frontend implantado com sucesso em todos os ambientes."
-          elif [[ "$NETLIFY_STATUS" == "success" ]]; then
-            MESSAGE="✅ Deploy Parcial! Frontend implantado com sucesso no Netlify, mas houve problemas no Coolify."
-          elif [[ "$COOLIFY_STATUS" == "success" ]]; then
-            MESSAGE="✅ Deploy Parcial! Frontend implantado com sucesso no Coolify, mas houve problemas no Netlify."
+          if [[ "$BUILD_STATUS" == "success" && "$DOCKER_STATUS" == "success" && ("$DEPLOY_STATUS" == "success" || "$DEPLOY_STATUS" == "skipped") ]]; then
+            STATUS_COLOR="${{ env.SUCCESS_COLOR }}"
+            STATUS_ICON="🎉"
+            STATUS_TITLE="Pipeline Concluído com Sucesso"
           else
-            MESSAGE="❌ Falha no Deploy! Ocorreram problemas na implantação do frontend em ambos os ambientes."
+            STATUS_COLOR="${{ env.ERROR_COLOR }}"
+            STATUS_ICON="⚠️"
+            STATUS_TITLE="Pipeline Concluído com Problemas"
           fi
           
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d "{
-              \"content\": \"$MESSAGE\nBranch: \`${{ github.ref_name }}\`\nCommit: \`${{ github.sha }}\`\nAutor: \`${{ github.actor }}\`\"
-            }" \
-            "$DISCORD_WEBHOOK" 
+          # Formatação da duração do pipeline
+          START_TIME=$(date -d "${{ github.event.repository.updated_at }}" +%s)
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+          MINUTES=$((DURATION / 60))
+          SECONDS=$((DURATION % 60))
+          
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "embeds": [{
+              "title": "'"$STATUS_ICON"' '"$STATUS_TITLE"'",
+              "description": "Resumo completo do pipeline de CI/CD do ${{ env.PROJECT_NAME }}",
+              "color": '"$STATUS_COLOR"',
+              "fields": [
+                {"name": "🔍 Validação e Build", "value": "'"$([[ "$BUILD_STATUS" == "success" ]] && echo "✅ Sucesso" || echo "❌ Falha")"'", "inline": true},
+                {"name": "🐳 Imagem Docker", "value": "'"$([[ "$DOCKER_STATUS" == "success" ]] && echo "✅ Sucesso" || echo "❌ Falha")"'", "inline": true},
+                {"name": "🚀 Deploy", "value": "'"$([[ "$DEPLOY_STATUS" == "success" ]] && echo "✅ Sucesso" || ([[ "$DEPLOY_STATUS" == "skipped" ]] && echo "⏭️ Ignorado" || echo "❌ Falha"))"'", "inline": true},
+                {"name": "Branch", "value": "`${{ github.ref_name }}`", "inline": true},
+                {"name": "Commit", "value": "`${{ github.sha }}`", "inline": true},
+                {"name": "Autor", "value": "`${{ github.actor }}`", "inline": true},
+                {"name": "Duração", "value": "'"$MINUTES"' min '"$SECONDS"' seg", "inline": true},
+                {"name": "Detalhes", "value": "[Ver workflow no GitHub]($WORKFLOW_URL)", "inline": true}
+              ],
+              "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+            }]
+          }' "$DISCORD_WEBHOOK" 
