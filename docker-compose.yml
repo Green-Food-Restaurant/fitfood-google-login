@@ -7,27 +7,28 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - VITE_AUTH_API_URL=https://auth.devarchitects.tech/api/v1/auth
+        - VITE_PRODUCTS_API_URL=http://173.249.12.112:8082/v1/product
+        - VITE_CHECKOUT_API_URL=http://173.249.12.112:8080/api/checkout
+        - VITE_ENABLE_ADMIN_PANEL=true
+        - VITE_ENABLE_CHECKOUT=true
+        - VITE_TOKEN_KEY=fitfood_auth_token
+        - VITE_REFRESH_TOKEN_KEY=fitfood_refresh_token
+        - VITE_USER_INFO_KEY=fitfood_user_info
+        - VITE_REMEMBER_ME_KEY=fitfood_remember_me
+        - VITE_SESSION_TIMEOUT=1800000
+        - VITE_WITH_CREDENTIALS=false
+        - VITE_GOOGLE_CLIENT_ID=565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com
+        - VITE_APP_ENV=production
     container_name: fitfood-frontend
     ports:
       - "3000:3000"
     restart: unless-stopped
     networks:
       - green-food-network
-    # Se precisar de variáveis de ambiente
     environment:
       - NODE_ENV=production
-      - VITE_AUTH_API_URL=http://173.249.12.112:3001/api/v1/auth
-      - VITE_PRODUCTS_API_URL=http://173.249.12.112:8082/v1/product
-      - VITE_CHECKOUT_API_URL=http://173.249.12.112:8080/api/checkout
-      - VITE_ENABLE_ADMIN_PANEL=true
-      - VITE_ENABLE_CHECKOUT=true
-      - VITE_TOKEN_KEY=fitfood_auth_token
-      - VITE_REFRESH_TOKEN_KEY=fitfood_refresh_token
-      - VITE_USER_INFO_KEY=fitfood_user_info
-      - VITE_REMEMBER_ME_KEY=fitfood_remember_me
-      - VITE_SESSION_TIMEOUT=1800000
-      - VITE_WITH_CREDENTIALS=true
-      - VITE_GOOGLE_CLIENT_ID=565009893604-sp8bd8vhclislma6b4anlla3sd23f0dr.apps.googleusercontent.com
 
 networks:
   green-food-network:
