@@ -5,9 +5,9 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Define as variáveis de ambiente para o build
-ENV VITE_AUTH_API_URL=http://auth.greenfood.devarchitects.tech/api/v1/auth
-ENV VITE_PRODUCTS_API_URL=http://product.greenfood.devarchitects.tech/v1/product
-ENV VITE_CHECKOUT_API_URL=http://checkout.greenfood.devarchitects.tech/v1/checkout
+ENV VITE_AUTH_API_URL=https://auth.greenfood.devarchitects.tech/api/v1/auth
+ENV VITE_PRODUCTS_API_URL=https://product.greenfood.devarchitects.tech/v1/product
+ENV VITE_CHECKOUT_API_URL=https://checkout.greenfood.devarchitects.tech/v1/checkout
 ENV VITE_ENABLE_ADMIN_PANEL=true
 ENV VITE_ENABLE_CHECKOUT=true
 ENV VITE_TOKEN_KEY=greenfood_auth_token

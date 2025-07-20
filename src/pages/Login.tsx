@@ -118,7 +118,7 @@ const Login = () => {
           </div>
           
           <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-green-600 to-green-400 bg-clip-text text-transparent">
-            FitFood
+            Green Food
           </h1>
           
           <div className="flex items-center gap-2 mb-8">
@@ -173,7 +173,7 @@ const Login = () => {
                 <path d="M10 2c1 .5 2 2 2 5"/>
               </svg>
             </div>
-            <span className="text-lg font-semibold text-green-600 dark:text-green-400">FitFood</span>
+            <span className="text-lg font-semibold text-green-600 dark:text-green-400">Green Food</span>
           </div>
         </div>
         

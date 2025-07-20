@@ -62,14 +62,14 @@ const Home = () => {
       name: 'Mariana Silva',
       avatar: hero1,
       rating: 5,
-      comment: "As refeições do FitFood mudaram minha rotina completamente! Consigo manter minha dieta mesmo com a correria do dia a dia. Os pratos são deliciosos e me ajudaram a atingir meus objetivos fitness."
+      comment: "As refeições do Green Food mudaram minha rotina completamente! Consigo manter minha dieta mesmo com a correria do dia a dia. Os pratos são deliciosos e me ajudaram a atingir meus objetivos fitness."
     },
     {
       id: 2,
       name: 'Rafael Mendes',
       avatar: hero2,
       rating: 4.8,
-      comment: "Como atleta, preciso de uma alimentação balanceada e que atenda às minhas necessidades nutricionais. O FitFood não só cumpre isso, como também surpreende no sabor. Recomendo muito!"
+      comment: "Como atleta, preciso de uma alimentação balanceada e que atenda às minhas necessidades nutricionais. O Green Food não só cumpre isso, como também surpreende no sabor. Recomendo muito!"
     }
   ];
   
