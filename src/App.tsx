@@ -13,6 +13,7 @@ import Cart from "./pages/Cart";
 import Admin from "./pages/Admin";
 import { CartProvider } from "react-use-cart";
 import { AuthProvider } from '@/contexts/AuthContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import Contato from "./pages/Contato";
 import Sobre from "./pages/Sobre";
 
@@ -27,14 +28,23 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/home" element={<Home />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/home" element={<Navigate to="/" />} />
               <Route path="/products" element={<Products />} />
               <Route path="/produtos" element={<Navigate to="/products" />} />
               <Route path="/carrinho" element={<Cart />} />
               <Route path="/cart" element={<Navigate to="/carrinho" />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/checkout" element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <Admin />
+                </ProtectedRoute>
+              } />
               <Route path="/contato" element={<Contato />} />
               <Route path="/sobre" element={<Sobre />} />
               <Route path="*" element={<NotFound />} />

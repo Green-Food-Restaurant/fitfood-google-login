@@ -2,12 +2,13 @@
 import React from 'react';
 import { useCart } from 'react-use-cart';
 import { MinusIcon, PlusIcon, TrashIcon, ShoppingBagIcon, ArrowLeftIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion'; // Importamos AnimatePresence também
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Button } from '@/components/ui/button';
 import { createCheckout } from '@/services/checkoutService';
+import { useAuth } from '@/hooks/useAuth';
 
 const Cart = () => {
   const {
@@ -19,6 +20,9 @@ const Cart = () => {
     emptyCart,
     totalItems
   } = useCart();
+  
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   // Variants para animações
   const containerVariants = {
@@ -60,6 +64,18 @@ const Cart = () => {
 
   async function handleCheckout() {
     if (isEmpty) return;
+    
+    // Verificar se o usuário está logado
+    if (!isAuthenticated) {
+      navigate('/login', { 
+        state: { 
+          from: '/checkout',
+          message: 'Faça login para finalizar sua compra'
+        } 
+      });
+      return;
+    }
+    
     try {
       const payload = {
         cartId: String(Date.now()),

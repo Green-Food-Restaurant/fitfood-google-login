@@ -13,10 +13,10 @@ const Login = () => {
   const { isAuthenticated, loading, login } = useAuth();
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Verificar se o usuário já está autenticado, se sim, redirecionar para home
+  // Verificar se o usuário já está autenticado, se sim, redirecionar
   useEffect(() => {
     if (isAuthenticated) {
-      const from = location.state?.from?.pathname || '/home';
+      const from = location.state?.from || '/';
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, location]);
@@ -194,9 +194,17 @@ const Login = () => {
                 </div>
               </div>
               <CardTitle className="text-3xl font-bold">Bem-vindo</CardTitle>
-              <p className="text-gray-500">
-                Acesse sua conta para continuar
-              </p>
+              {location.state?.message ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                  <p className="text-green-700 text-sm">
+                    {location.state.message}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-500">
+                  Acesse sua conta para continuar
+                </p>
+              )}
             </CardHeader>
             
             <CardContent className="relative z-10 space-y-6 pb-8">

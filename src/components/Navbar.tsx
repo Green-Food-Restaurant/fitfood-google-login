@@ -118,7 +118,8 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                 )}
               </Link>            ))}
 
-            <div className="flex items-center space-x-4">              {user && (
+            <div className="flex items-center space-x-4">
+              {user ? (
                 <div className="flex items-center mr-2">
                   <span className={`text-sm font-medium ${
                     isScrolled 
@@ -140,6 +141,17 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                     <FiLogOut size={18} />
                   </button>
                 </div>
+              ) : (
+                <Link 
+                  to="/login"
+                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+                    isScrolled 
+                      ? 'bg-green-600 text-white hover:bg-green-700' 
+                      : 'bg-white text-green-600 hover:bg-green-50'
+                  }`}
+                >
+                  Entrar
+                </Link>
               )}
               <CartDropdown />
             </div>
@@ -184,7 +196,10 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                     >
                       {link.title}
                     </Link>
-                  ))}                </nav>                {user && (
+                  ))}
+                </nav>
+                
+                {user ? (
                   <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700">
                       Olá, {user.name ? user.name.split(' ')[0] : 'Usuário'}
@@ -196,6 +211,15 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                       <FiLogOut size={18} />
                       <span>Sair</span>
                     </button>
+                  </div>
+                ) : (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <Link
+                      to="/login"
+                      className="block w-full text-center bg-green-600 text-white py-2 px-4 rounded-md font-medium hover:bg-green-700 transition-colors"
+                    >
+                      Entrar
+                    </Link>
                   </div>
                 )}
               </div>

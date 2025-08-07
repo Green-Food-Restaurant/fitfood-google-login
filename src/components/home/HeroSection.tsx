@@ -38,7 +38,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
   // Usar imagens das props se fornecidas, senão carregar dinamicamente
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
   const [current, setCurrent] = useState(0);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0.5]);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detectar se é mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Ajustar opacidade: em mobile mantém mais visível, em desktop pode diminuir
+  const heroOpacity = useTransform(
+    scrollYProgress, 
+    [0, 0.1], 
+    isMobile ? [1, 0.9] : [1, 0.5]
+  );
   
   useEffect(() => {
     // Carregar imagens dinamicamente se não forem fornecidas pelas props
@@ -76,7 +94,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
   return (
     <motion.section 
       className="relative pt-16 pb-24 overflow-hidden"
-      style={{ opacity: heroOpacity }}
+      style={isMobile ? {} : { opacity: heroOpacity }}
     >
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-green-50 to-transparent"></div>
@@ -173,7 +191,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
           </motion.div>
           
           <motion.div 
-            className="relative h-[450px]"
+            className={`relative ${isMobile ? 'h-[350px]' : 'h-[450px]'}`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -193,31 +211,56 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
                 <img
                   src={src}
                   alt={`Hero ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover ${
+                    isMobile ? 'object-center' : ''
+                  }`}
+                  style={isMobile ? { 
+                    filter: 'none',
+                    opacity: 1,
+                    transform: 'none'
+                  } : {}}
                 />
                 
-                {/* Overlay glassmorphism cards */}
-                <motion.div 
-                  className="absolute bottom-6 left-6 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-lg max-w-[200px]"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: current === index ? 1 : 0, x: current === index ? 0 : -20 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                >
-                  <div className="flex items-center gap-2 text-green-600 font-medium">
-                    <FaLeaf /> Ingredientes naturais
-                  </div>
-                </motion.div>
+                {/* Overlay glassmorphism cards - reduzidos em mobile */}
+                {!isMobile && (
+                  <>
+                    <motion.div 
+                      className="absolute bottom-6 left-6 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-lg max-w-[200px]"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: current === index ? 1 : 0, x: current === index ? 0 : -20 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                    >
+                      <div className="flex items-center gap-2 text-green-600 font-medium">
+                        <FaLeaf /> Ingredientes naturais
+                      </div>
+                    </motion.div>
+                    
+                    <motion.div 
+                      className="absolute top-6 right-6 bg-white/80 backdrop-blur-sm py-1 px-3 rounded-full shadow-lg"
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: current === index ? 1 : 0, y: current === index ? 0 : -20 }}
+                      transition={{ delay: 0.4, duration: 0.5 }}
+                    >
+                      <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                        <FaClock className="text-xs" /> Entrega em 30min
+                      </div>
+                    </motion.div>
+                  </>
+                )}
                 
-                <motion.div 
-                  className="absolute top-6 right-6 bg-white/80 backdrop-blur-sm py-1 px-3 rounded-full shadow-lg"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: current === index ? 1 : 0, y: current === index ? 0 : -20 }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                  <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
-                    <FaClock className="text-xs" /> Entrega em 30min
-                  </div>
-                </motion.div>
+                {/* Versão mobile simplificada */}
+                {isMobile && (
+                  <motion.div 
+                    className="absolute bottom-4 left-4 bg-white/90 py-2 px-3 rounded-full shadow-md"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: current === index ? 1 : 0, y: current === index ? 0 : 20 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                  >
+                    <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                      <FaLeaf className="text-xs" /> Natural
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             ))}
             
