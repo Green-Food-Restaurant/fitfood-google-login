@@ -211,10 +211,7 @@ const Login = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <div className="flex flex-col items-center">
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-                    Entre com sua conta preferida
-                  </h3>
+                <div className="flex flex-col items-center dark:bg-gray-800">
                   <GoogleAuthButton rememberMe={rememberMe} />
                 </div>
                 
