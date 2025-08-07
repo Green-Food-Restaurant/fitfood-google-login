@@ -211,7 +211,7 @@ const Login = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <div className="flex flex-col items-center dark:bg-gray-800">
+                <div className="flex flex-col items-center">
                   <GoogleAuthButton rememberMe={rememberMe} />
                 </div>
                 

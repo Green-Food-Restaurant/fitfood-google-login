@@ -99,7 +99,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
   };
 
   return (
-    <div className="google-login-wrapper dark:bg-gray-800">
+    <div className="google-login-wrapper">
       <GoogleLogin
         onSuccess={handleLoginSuccess}
         onError={handleLoginError}
