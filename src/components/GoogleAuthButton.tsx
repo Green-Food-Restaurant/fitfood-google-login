@@ -99,18 +99,20 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
   };
 
   return (
-    <GoogleLogin
-      onSuccess={handleLoginSuccess}
-      onError={handleLoginError}
-      useOneTap={true}
-      text="continue_with"
-      shape="pill"
-      size="large"
-      locale="pt-BR"
-      theme="filled_black"
-      logo_alignment="left"
-      context="signin"
-    />
+    <div className="google-login-wrapper">
+      <GoogleLogin
+        onSuccess={handleLoginSuccess}
+        onError={handleLoginError}
+        useOneTap={true}
+        text="continue_with"
+        shape="pill"
+        size="large"
+        locale="pt-BR"
+        theme="filled_black"
+        logo_alignment="left"
+        context="signin"
+      />
+    </div>
   );
 };
 
