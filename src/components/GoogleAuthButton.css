@@ -15,6 +15,10 @@
   font-weight: 500 !important;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,.25) !important;
   transition: background-color .218s, border-color .218s, box-shadow .218s !important;
+  width: 280px !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  border: none !important;
 }
 
 /* Estilo para o ícone do Google */
@@ -50,4 +54,22 @@
   background-color: rgba(0, 0, 0, 0.12) !important;
   color: rgba(0, 0, 0, 0.38) !important;
   box-shadow: none !important;
+}
+
+/* Substituição para -ms-high-contrast usando forced-colors */
+@media (forced-colors: active) {
+  .nsm7Bb-HzV7m-LgbsSe {
+    border: 1px solid ButtonText !important;
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+  }
+  
+  .nsm7Bb-HzV7m-LgbsSe:hover {
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+  }
+  
+  .nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId {
+    color: ButtonText !important;
+  }
 }
