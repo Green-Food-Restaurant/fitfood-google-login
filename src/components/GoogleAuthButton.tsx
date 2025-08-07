@@ -5,6 +5,8 @@ import { toast } from "@/components/ui/sonner";
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import "./GoogleAuthButton.css";
 
 // Definir manualmente o tipo para CredentialResponse já que não temos @types disponível
 interface CredentialResponse {
@@ -22,6 +24,8 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
   const { login, loading, error } = useAuth();
   const [googleScriptLoaded, setGoogleScriptLoaded] = useState<boolean>(false);
   const [googleScriptError, setGoogleScriptError] = useState<boolean>(false);
+  const [styleLoaded, setStyleLoaded] = useState<boolean>(false);
+  const [checkingStyle, setCheckingStyle] = useState<boolean>(true);
 
   useEffect(() => {
     // Verificar se o script do Google foi carregado
@@ -30,10 +34,24 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
         console.log('Script do Google carregado com sucesso');
         setGoogleScriptLoaded(true);
         setGoogleScriptError(false);
+        
+        // Verificar se os estilos do botão do Google foram carregados
+        setTimeout(() => {
+          const googleButton = document.querySelector('.nsm7Bb-HzV7m-LgbsSe');
+          if (googleButton) {
+            const styles = window.getComputedStyle(googleButton);
+            const hasBackgroundColor = styles.backgroundColor !== 'rgba(0, 0, 0, 0)' && 
+                                      styles.backgroundColor !== 'transparent';
+            setStyleLoaded(hasBackgroundColor);
+            console.log('Estilos do botão do Google carregados:', hasBackgroundColor);
+          }
+          setCheckingStyle(false);
+        }, 1000);
       } else {
         console.error('Script do Google não foi carregado');
         setGoogleScriptLoaded(false);
         setGoogleScriptError(true);
+        setCheckingStyle(false);
       }
     };
 
@@ -103,20 +121,38 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
       {loading && <span className="text-xs text-gray-500 mb-2">Carregando...</span>}
       {error && <div className="text-xs text-red-500 mb-2">{error}</div>}
       <div className="w-full max-w-xs mx-auto">
-        {!googleScriptError ? (
-          <GoogleLogin
-            onSuccess={handleLoginSuccess}
-            onError={handleLoginError}
-            useOneTap={false}
-            text="continue_with"
-            shape="pill"
-            size="large"
-            locale="pt-BR"
-            theme="filled_blue"
-            width="100%"
-            logo_alignment="left"
-            context="signin"
-          />
+        {checkingStyle ? (
+          <div className="flex justify-center items-center h-10">
+            <LoadingSpinner size="sm" />
+          </div>
+        ) : !googleScriptError ? (
+          <>
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={handleLoginError}
+              useOneTap={false}
+              text="continue_with"
+              shape="pill"
+              size="large"
+              locale="pt-BR"
+              theme="filled_blue"
+              width="100%"
+              logo_alignment="left"
+              context="signin"
+            />
+            {!styleLoaded && (
+              <div className="mt-2 text-xs text-amber-600 text-center">
+                <p>Se o botão aparecer como um retângulo branco, tente:</p>
+                <Button 
+                  variant="link" 
+                  className="text-xs text-blue-600 p-0 h-auto" 
+                  onClick={reloadPage}
+                >
+                  Recarregar a página
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center p-4 border border-gray-300 rounded-lg bg-gray-50">
             <div className="text-sm text-gray-700 mb-3">
