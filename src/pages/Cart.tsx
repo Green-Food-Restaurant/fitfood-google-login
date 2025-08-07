@@ -9,6 +9,7 @@ import Footer from '../components/Footer';
 import { Button } from '@/components/ui/button';
 import { createCheckout } from '@/services/checkoutService';
 import { useAuth } from '@/hooks/useAuth';
+import { getPlaceholderByCategory } from '@/utils/placeholders';
 
 const Cart = () => {
   const {
@@ -213,9 +214,13 @@ const Cart = () => {
                                 whileHover={{ scale: 1.05 }}
                               >
                                 <img 
-                                  src={item.image} 
+                                  src={item.image || getPlaceholderByCategory(item.category)} 
                                   alt={item.name} 
-                                  className="w-full h-full object-cover" 
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    // Fallback para o placeholder genérico se tudo falhar
+                                    (e.target as HTMLImageElement).src = '/placeholder.svg';
+                                  }}
                                 />
                               </motion.div>
                               <div className="ml-4">

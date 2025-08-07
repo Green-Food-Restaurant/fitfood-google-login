@@ -3,6 +3,7 @@ import { useCart } from 'react-use-cart';
 import { ShoppingCart } from 'lucide-react';
 import * as Popover from '@radix-ui/react-popover';
 import { Button } from '@/components/ui/button';
+import { getPlaceholderByCategory } from '@/utils/placeholders';
 
 const CartDropdown = () => {
   const { items, totalItems, cartTotal, emptyCart } = useCart();
@@ -44,9 +45,13 @@ const CartDropdown = () => {
                   >
                     <div className="w-12 h-12 bg-gray-100 rounded flex-shrink-0 overflow-hidden">
                       <img 
-                        src={item.image} 
+                        src={item.image || getPlaceholderByCategory(item.category)} 
                         alt={item.name} 
-                        className="w-full h-full object-cover" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = getPlaceholderByCategory(item.category);
+                        }}
                       />
                     </div>
                     <div className="flex-grow min-w-0">
