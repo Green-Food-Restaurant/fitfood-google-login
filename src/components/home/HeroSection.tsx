@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useTransform, MotionValue } from 'framer-motion';
-import { FaStar, FaLeaf, FaClock } from 'react-icons/fa';
+import { FaStar, FaLeaf, FaClock, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface HeroSectionProps {
   scrollYProgress: MotionValue<number>;
@@ -34,11 +34,18 @@ const loadHeroImages = () => {
   return images;
 };
 
+// Constantes para swipe
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
+};
+
 const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: propHeroImages }) => {
   // Usar imagens das props se fornecidas, senão carregar dinamicamente
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
   const [current, setCurrent] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   
   // Detectar se é mobile
   useEffect(() => {
@@ -71,16 +78,54 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
     ? propHeroImages
     : loadedImages;
   
+  // Funções para navegação manual dos slides usando useCallback
+  const nextSlide = useCallback(() => {
+    setCurrent(prev => (prev + 1) % heroImages.length);
+    setIsPaused(true);
+    // Resume auto-play after 10 seconds
+    setTimeout(() => setIsPaused(false), 10000);
+  }, [heroImages.length]);
+  
+  const prevSlide = useCallback(() => {
+    setCurrent(prev => (prev - 1 + heroImages.length) % heroImages.length);
+    setIsPaused(true);
+    // Resume auto-play after 10 seconds
+    setTimeout(() => setIsPaused(false), 10000);
+  }, [heroImages.length]);
+  
+  const goToSlide = useCallback((index: number) => {
+    setCurrent(index);
+    setIsPaused(true);
+    // Resume auto-play after 10 seconds
+    setTimeout(() => setIsPaused(false), 10000);
+  }, []);
+  
+  // Navegação por teclado
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (heroImages.length <= 1) return;
+      
+      if (event.key === 'ArrowLeft') {
+        prevSlide();
+      } else if (event.key === 'ArrowRight') {
+        nextSlide();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [heroImages.length, nextSlide, prevSlide]);
+  
   // Efeito de transição de imagens hero
   useEffect(() => {
-    if (heroImages.length <= 1) return; // Não iniciar intervalo se houver apenas uma imagem
+    if (heroImages.length <= 1 || isPaused) return; // Não iniciar intervalo se houver apenas uma imagem ou estiver pausado
     
     const interval = setInterval(() => {
       setCurrent(prev => (prev + 1) % heroImages.length);
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, [heroImages.length, isPaused]);
   
   // Se não houver imagens, mostrar uma mensagem ou fallback
   if (heroImages.length === 0) {
@@ -195,6 +240,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
+            drag={isMobile ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={(e, { offset, velocity }) => {
+              if (isMobile && heroImages.length > 1) {
+                const swipe = swipePower(offset.x, velocity.x);
+                if (swipe < -swipeConfidenceThreshold) {
+                  nextSlide();
+                } else if (swipe > swipeConfidenceThreshold) {
+                  prevSlide();
+                }
+              }
+            }}
           >
             {heroImages.map((src, index) => (
               <motion.div
@@ -264,15 +321,50 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
               </motion.div>
             ))}
             
-            {/* Navegação das imagens - Mostrar apenas se houver mais de uma imagem */}
+            {/* Botões de navegação - Mostrar apenas se houver mais de uma imagem */}
             {heroImages.length > 1 && (
-              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2">
+              <>
+                {/* Botão anterior */}
+                <motion.button
+                  onClick={prevSlide}
+                  className={`absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-green-600 rounded-full shadow-xl border-2 border-green-100 transition-all duration-200 hover:scale-105 z-20 ${
+                    isMobile ? 'p-2' : 'p-3'
+                  }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Slide anterior"
+                >
+                  <FaChevronLeft className={isMobile ? 'text-sm' : 'text-lg'} />
+                </motion.button>
+                
+                {/* Botão próximo */}
+                <motion.button
+                  onClick={nextSlide}
+                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-green-600 rounded-full shadow-xl border-2 border-green-100 transition-all duration-200 hover:scale-105 z-20 ${
+                    isMobile ? 'p-2' : 'p-3'
+                  }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Próximo slide"
+                >
+                  <FaChevronRight className={isMobile ? 'text-sm' : 'text-lg'} />
+                </motion.button>
+              </>
+            )}
+            
+            {/* Indicadores de navegação - Mostrar apenas se houver mais de uma imagem */}
+            {heroImages.length > 1 && (
+              <div className={`absolute left-1/2 transform -translate-x-1/2 flex gap-2 z-10 ${
+                isMobile ? '-bottom-4' : '-bottom-6'
+              }`}>
                 {heroImages.map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => setCurrent(index)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all ${
-                      current === index ? 'bg-green-600 w-6' : 'bg-gray-300'
+                    onClick={() => goToSlide(index)}
+                    className={`rounded-full transition-all duration-200 hover:scale-110 ${
+                      current === index 
+                        ? 'bg-green-600 w-6 h-2.5' 
+                        : 'bg-gray-300 hover:bg-gray-400 w-2.5 h-2.5'
                     }`}
                     aria-label={`Ver imagem ${index + 1}`}
                   />

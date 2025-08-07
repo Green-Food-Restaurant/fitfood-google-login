@@ -13,13 +13,17 @@ import CTASection from '../components/home/CTASection';
 // Importando assets
 import hero1 from '../assets/hero-food.png';
 import hero2 from '../assets/hero-food2.png';
+import hero3 from '../assets/image/herosection/20250514_2157_Refeições Saudáveis Vibrantes_simple_compose_01jv8q19def21vxb0mkekkek36.png';
+import hero4 from '../assets/image/herosection/20250514_2157_Refeições Saudáveis Vibrantes_simple_compose_01jv8q19dffsja07a5y5kwvb83.png';
+import hero5 from '../assets/image/herosection/20250514_2157_Refeições Saudáveis Vibrantes_simple_compose_01jv8q1zqsey6snp1gwv2axrde.png';
+import hero6 from '../assets/image/herosection/20250514_2157_Refeições Saudáveis Vibrantes_simple_compose_01jv8q1zqtf01shvr9n0k6bvqz.png';
 
 const Home = () => {
   // Para animações de scroll
   const { scrollYProgress } = useScroll();
   
   // Arrays e dados para os componentes
-  const heroImages = [hero1, hero2];
+  const heroImages = [hero1, hero2, hero3, hero4, hero5, hero6];
   
   // Produtos destaque
   const destaques = [
@@ -77,7 +81,7 @@ const Home = () => {
     <div className="min-h-screen bg-[#F9FDF7] text-gray-800 overflow-x-hidden">
       <Navbar />
       
-      <HeroSection scrollYProgress={scrollYProgress} />
+      <HeroSection scrollYProgress={scrollYProgress} heroImages={heroImages} />
       
       <SpecialtiesSection scrollYProgress={scrollYProgress} />
       
