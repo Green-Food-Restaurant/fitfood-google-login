@@ -116,6 +116,9 @@
 }
 
 /* Google Login Dark Theme Fixes */
+/* Aplicação mais robusta para todos os cenários de tema escuro */
+
+/* Seletor específico para tema escuro controlado por next-themes */
 .dark .google-login-wrapper #container-div,
 .dark .google-login-wrapper .haAclf {
   background-color: #1f1f1f !important;
@@ -123,4 +126,107 @@
   border: none !important;
   border-radius: 25px !important;
   padding: 0 !important;
+}
+
+.dark .google-login-wrapper [role="button"] {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+  border: none !important;
+  border-radius: 25px !important;
+  width: 100% !important;
+}
+
+.dark .google-login-wrapper .nsm7Bb-HzV7m-LgbsSe {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+}
+
+.dark .google-login-wrapper .ssJRIf,
+.dark .google-login-wrapper .fmcmS,
+.dark .google-login-wrapper .K4efff {
+  color: white !important;
+}
+
+.dark .google-login-wrapper * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Aplicação direta quando o tema escuro está ativo via data-theme */
+[data-theme="dark"] .google-login-wrapper #container-div,
+[data-theme="dark"] .google-login-wrapper .haAclf {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 0 !important;
+}
+
+[data-theme="dark"] .google-login-wrapper [role="button"] {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+  border: none !important;
+  border-radius: 25px !important;
+  width: 100% !important;
+}
+
+[data-theme="dark"] .google-login-wrapper .nsm7Bb-HzV7m-LgbsSe {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+}
+
+[data-theme="dark"] .google-login-wrapper .ssJRIf,
+[data-theme="dark"] .google-login-wrapper .fmcmS,
+[data-theme="dark"] .google-login-wrapper .K4efff {
+  color: white !important;
+}
+
+[data-theme="dark"] .google-login-wrapper * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Força aplicação em qualquer elemento com fundo escuro */
+html.dark .google-login-wrapper #container-div,
+html.dark .google-login-wrapper .haAclf,
+html[data-theme="dark"] .google-login-wrapper #container-div,
+html[data-theme="dark"] .google-login-wrapper .haAclf {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 0 !important;
+}
+
+html.dark .google-login-wrapper [role="button"],
+html[data-theme="dark"] .google-login-wrapper [role="button"] {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+  border: none !important;
+  border-radius: 25px !important;
+  width: 100% !important;
+}
+
+html.dark .google-login-wrapper .nsm7Bb-HzV7m-LgbsSe,
+html[data-theme="dark"] .google-login-wrapper .nsm7Bb-HzV7m-LgbsSe {
+  background-color: #1f1f1f !important;
+  background: #1f1f1f !important;
+}
+
+html.dark .google-login-wrapper .ssJRIf,
+html.dark .google-login-wrapper .fmcmS,
+html.dark .google-login-wrapper .K4efff,
+html[data-theme="dark"] .google-login-wrapper .ssJRIf,
+html[data-theme="dark"] .google-login-wrapper .fmcmS,
+html[data-theme="dark"] .google-login-wrapper .K4efff {
+  color: white !important;
+}
+
+html.dark .google-login-wrapper *,
+html[data-theme="dark"] .google-login-wrapper * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
