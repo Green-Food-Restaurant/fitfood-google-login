@@ -1,7 +1,7 @@
 # Documentação do Componente de Gerenciamento de Usuários
 
 ## Visão Geral
-O componente de Gerenciamento de Usuários fornece uma interface para administradores gerenciarem os usuários da plataforma FitFood. Ele permite listar, criar, editar e excluir usuários, bem como gerenciar suas permissões e status.
+O componente de Gerenciamento de Usuários fornece uma interface para administradores gerenciarem os usuários da plataforma Green Food. Ele permite listar, criar, editar e excluir usuários, bem como gerenciar suas permissões e status.
 
 ## Funcionalidades Implementadas
 

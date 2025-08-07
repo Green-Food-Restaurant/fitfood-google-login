@@ -79,7 +79,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollYProgress, heroImages: 
       style={{ opacity: heroOpacity }}
     >
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-green-50 dark:from-green-900/30 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-green-50 to-transparent"></div>
         {/* Formas orgânicas decorativas */}
         <motion.div 
           className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-green-100 opacity-70"

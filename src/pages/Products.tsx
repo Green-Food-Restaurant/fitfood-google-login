@@ -147,7 +147,7 @@ const Products = () => {
     }
   };
   return (
-    <div className="flex flex-col min-h-screen bg-[#F4FDF2] dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    <div className="flex flex-col min-h-screen bg-[#F4FDF2] text-gray-800">
       <Navbar />
 
       <motion.main 
@@ -158,7 +158,7 @@ const Products = () => {
       >
         <div className="max-w-6xl mx-auto">
           <motion.h1 
-            className="text-3xl font-bold text-center mb-6 text-green-800 dark:text-green-400"
+            className="text-3xl font-bold text-center mb-6 text-green-800"
             variants={headerVariants}
             initial="hidden"
             animate="visible"
@@ -227,7 +227,7 @@ const Products = () => {
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
-                  className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" 
+                  className="h-16 w-16 text-gray-300 mb-4" 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
@@ -239,9 +239,9 @@ const Products = () => {
                     d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
                   />
                 </svg>
-                <p className="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2">
+                <p className="text-xl font-medium text-gray-500 mb-2">
                   Nenhum produto encontrado
-                </p>                <p className="text-gray-400 dark:text-gray-500 max-w-md">                  {filtroCategoria === 'Todos' 
+                </p>                <p className="text-gray-400 max-w-md">                  {filtroCategoria === 'Todos' 
                     ? 'Não encontramos nenhum produto disponível no momento.' 
                     : `Não encontramos nenhum produto na categoria "${
                         filtroCategoria === 'LANCHE' ? 'Lanches' : 

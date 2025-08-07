@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import CartDropdown from './CartDropdown';
-import ThemeToggle from './ThemeToggle';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
@@ -61,28 +60,28 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
       <header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled 
-            ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg py-2' 
-            : 'bg-green-800/50 dark:bg-gray-900 backdrop-blur-sm py-4'
+            ? 'bg-white/95 backdrop-blur-md shadow-lg py-2' 
+            : 'bg-green-800/50 backdrop-blur-sm py-4'
         }`}
       >
         <div className="container mx-auto flex items-center justify-between px-6">
           {/* Logo */}
           <Link to="/" className="flex items-center group">
             <div className={`flex items-center justify-center rounded-full p-2 ${
-              isScrolled ? 'bg-green-600 dark:bg-green-600' : 'bg-green-500 dark:bg-green-600'
+              isScrolled ? 'bg-green-600' : 'bg-green-500'
             } transition-all duration-300 group-hover:scale-105`}>
               <FaLeaf className="text-white text-lg" />
             </div>
             <div className="ml-2">
               <span className={`font-bold text-xl transition-all duration-300 ${
-                isScrolled ? 'text-gray-800 dark:text-white' : 'text-white'
+                isScrolled ? 'text-gray-800' : 'text-white'
               }`}>
-                FitFood
+                Green Food
               </span>
               <span className={`block text-xs italic transition-all duration-300 ${
                 isScrolled 
-                  ? 'text-green-600 dark:text-green-500' 
-                  : 'text-green-200 dark:text-green-400'
+                  ? 'text-green-600' 
+                  : 'text-green-200'
               }`}>
                 Nutrição que transforma
               </span>
@@ -98,18 +97,18 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                 className={`relative py-1 transition-colors duration-300 ${
                   isActive(link.path) 
                     ? isScrolled 
-                      ? 'text-green-600 dark:text-green-500 font-medium' 
+                      ? 'text-green-600 font-medium' 
                       : 'text-white font-medium'
                     : isScrolled 
-                      ? 'text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-500' 
-                      : 'text-white/80 dark:text-gray-300 hover:text-white dark:hover:text-white'
+                      ? 'text-gray-700 hover:text-green-600' 
+                      : 'text-white/80 hover:text-white'
                 }`}
               >
                 {link.title}
                 {isActive(link.path) && (
                   <motion.div 
                     className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                      isScrolled ? 'bg-green-600 dark:bg-green-500' : 'bg-white dark:bg-green-500'
+                      isScrolled ? 'bg-green-600' : 'bg-white'
                     }`}
                     layoutId="navbar-indicator"
                     initial={{ opacity: 0 }}
@@ -123,8 +122,8 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                 <div className="flex items-center mr-2">
                   <span className={`text-sm font-medium ${
                     isScrolled 
-                      ? 'text-gray-700 dark:text-gray-300' 
-                      : 'text-white/90 dark:text-gray-300'
+                      ? 'text-gray-700' 
+                      : 'text-white/90'
                   }`}>
                     Olá, {user.name ? user.name.split(' ')[0] : 'Usuário'}
                   </span>
@@ -132,7 +131,7 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                     onClick={handleLogout}
                     className={`ml-3 p-1.5 rounded-full ${
                       isScrolled 
-                        ? 'text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
+                        ? 'text-gray-700 hover:bg-gray-100' 
                         : 'text-white hover:bg-white/10'
                     } transition-colors`}
                     aria-label="Sair"
@@ -143,18 +142,16 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                 </div>
               )}
               <CartDropdown />
-              <ThemeToggle />
             </div>
           </nav>
 
           {/* Mobile Navigation Toggle */}
           <div className="flex items-center space-x-4 md:hidden">
             <CartDropdown />
-            <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={`p-2 rounded-full ${
-                isScrolled ? 'text-gray-700 dark:text-white' : 'text-white'
+                isScrolled ? 'text-gray-700' : 'text-white'
               }`}
               aria-label="Menu"
             >
@@ -171,7 +168,7 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden bg-white dark:bg-gray-900 shadow-lg"
+              className="md:hidden bg-white shadow-lg"
             >
               <div className="container mx-auto px-6 py-4">
                 <nav className="flex flex-col space-y-4">
@@ -181,20 +178,20 @@ const Navbar = () => {  const [isScrolled, setIsScrolled] = useState(false);
                       to={link.path}
                       className={`py-2 px-4 rounded-md ${
                         isActive(link.path)
-                          ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-500 font-medium'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          ? 'bg-green-50 text-green-600 font-medium'
+                          : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
                       {link.title}
                     </Link>
                   ))}                </nav>                {user && (
-                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">
                       Olá, {user.name ? user.name.split(' ')[0] : 'Usuário'}
                     </span>
                     <button 
                       onClick={handleLogout}
-                      className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-500"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-green-600"
                     >
                       <FiLogOut size={18} />
                       <span>Sair</span>

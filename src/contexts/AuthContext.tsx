@@ -252,10 +252,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       try {
         // Verificar se há tokens ou informações parciais em storages diferentes
-        const hasTokenInLocal = !!localStorage.getItem('fitfood_auth_token');
-        const hasTokenInSession = !!sessionStorage.getItem('fitfood_auth_token');
-        const hasUserInLocal = !!localStorage.getItem('fitfood_user_info');
-        const hasUserInSession = !!sessionStorage.getItem('fitfood_user_info');
+        const hasTokenInLocal = !!localStorage.getItem('greenfood_auth_token');
+        const hasTokenInSession = !!sessionStorage.getItem('greenfood_auth_token');
+        const hasUserInLocal = !!localStorage.getItem('greenfood_user_info');
+        const hasUserInSession = !!sessionStorage.getItem('greenfood_user_info');
         
         // Detectar estado inconsistente e corrigir
         if ((hasTokenInLocal && !hasUserInLocal) || (hasTokenInSession && !hasUserInSession)) {

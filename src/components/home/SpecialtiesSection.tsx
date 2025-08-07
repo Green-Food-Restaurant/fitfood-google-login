@@ -13,13 +13,13 @@ const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ scrollYProgress
   return (
     <motion.section 
       id="especialidades" 
-      className="py-20 bg-white dark:bg-gray-900"
+      className="py-20 bg-white"
       style={{ y: specialtiesY }}
     >
       <div className="container mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.span 
-            className="text-green-600 dark:text-green-400 font-medium"
+            className="text-green-600 font-medium"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -28,7 +28,7 @@ const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ scrollYProgress
             O QUE OFERECEMOS
           </motion.span>
           <motion.h2 
-            className="text-3xl lg:text-4xl font-bold mt-2 mb-4 dark:text-white"
+            className="text-3xl lg:text-4xl font-bold mt-2 mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -37,7 +37,7 @@ const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ scrollYProgress
             Nossas Especialidades
           </motion.h2>
           <motion.p
-            className="text-gray-600 dark:text-gray-300"
+            className="text-gray-600"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -50,31 +50,31 @@ const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ scrollYProgress
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Pratos Principais Card */}
           <SpecialtyCard 
-            icon={<FaCarrot className="text-6xl text-orange-500 dark:text-orange-400 group-hover:scale-110 transition-transform duration-300" />}
+            icon={<FaCarrot className="text-6xl text-orange-500 group-hover:scale-110 transition-transform duration-300" />}
             title="Pratos Principais"
             description="Saborosos e nutritivos para abastecer seu dia com todos os nutrientes necessários."
             link="/produtos?categoria=Pratos"
-            bgColor="bg-orange-100 dark:bg-orange-900/20"
+            bgColor="bg-orange-100"
             delay={0.2}
           />
 
           {/* Saladas Card */}
           <SpecialtyCard 
-            icon={<FaAppleAlt className="text-6xl text-green-500 dark:text-green-400 group-hover:scale-110 transition-transform duration-300" />}
+            icon={<FaAppleAlt className="text-6xl text-green-500 group-hover:scale-110 transition-transform duration-300" />}
             title="Saladas"
             description="Frescas e coloridas para manter a leveza e fornecer vitaminas e minerais essenciais."
             link="/produtos?categoria=Saladas"
-            bgColor="bg-green-100 dark:bg-green-900/20"
+            bgColor="bg-green-100"
             delay={0.3}
           />
 
           {/* Snacks Card */}
           <SpecialtyCard 
-            icon={<FaDrumstickBite className="text-6xl text-yellow-500 dark:text-yellow-300 group-hover:scale-110 transition-transform duration-300" />}
+            icon={<FaDrumstickBite className="text-6xl text-yellow-500 group-hover:scale-110 transition-transform duration-300" />}
             title="Snacks"
             description="Pequenas delícias para saciar a fome entre as refeições sem comprometer sua dieta."
             link="/produtos?categoria=Snacks"
-            bgColor="bg-yellow-100 dark:bg-yellow-900/20"
+            bgColor="bg-yellow-100"
             delay={0.4}
           />
         </div>
@@ -95,7 +95,7 @@ interface SpecialtyCardProps {
 const SpecialtyCard: React.FC<SpecialtyCardProps> = ({ icon, title, description, link, bgColor, delay }) => {
   return (
     <motion.div 
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl overflow-hidden transition-all duration-300 relative group"
+      className="bg-white rounded-2xl shadow-lg hover:shadow-xl overflow-hidden transition-all duration-300 relative group"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -106,9 +106,9 @@ const SpecialtyCard: React.FC<SpecialtyCardProps> = ({ icon, title, description,
         {icon}
       </div>
       <div className="p-6">
-        <h3 className="text-xl font-bold mb-2 dark:text-white">{title}</h3>
-        <p className="text-gray-600 dark:text-gray-300 mb-4">{description}</p>
-        <Link to={link} className="inline-flex items-center text-green-600 dark:text-green-400 font-medium hover:text-green-700 dark:hover:text-green-300 transition-colors">
+        <h3 className="text-xl font-bold mb-2">{title}</h3>
+        <p className="text-gray-600 mb-4">{description}</p>
+        <Link to={link} className="inline-flex items-center text-green-600 font-medium hover:text-green-700 transition-colors">
           Ver opções <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1"><path d="m9 18 6-6-6-6"/></svg>
         </Link>
       </div>

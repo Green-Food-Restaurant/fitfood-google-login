@@ -158,7 +158,7 @@ class AuthService {  /**
       // Em caso de erro, retornar um usuário padrão (apenas para demonstração)
       return {
         name: 'Usuário Demo',
-        email: 'demo@fitfood.com',
+        email: 'demo@greenfood.com',
         picture: 'https://ui-avatars.com/api/?name=Usuario+Demo',
         role: UserRole.USER
       };

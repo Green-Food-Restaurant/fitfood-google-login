@@ -47,7 +47,7 @@ const recentOrders = [
 const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
       
       {/* Cartões de métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
                 {dashboardData.totalSales.increasing ? <TrendingUp className="mr-1 h-4 w-4" /> : <TrendingDown className="mr-1 h-4 w-4" />}
                 {dashboardData.totalSales.percentage}%
               </div>
-              <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">vs. mês anterior</span>
+              <span className="text-gray-500 text-xs ml-2">vs. mês anterior</span>
             </div>
           </CardContent>
         </Card>
@@ -80,7 +80,7 @@ const Dashboard: React.FC = () => {
                 {dashboardData.totalOrders.increasing ? <TrendingUp className="mr-1 h-4 w-4" /> : <TrendingDown className="mr-1 h-4 w-4" />}
                 {dashboardData.totalOrders.percentage}%
               </div>
-              <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">vs. mês anterior</span>
+              <span className="text-gray-500 text-xs ml-2">vs. mês anterior</span>
             </div>
           </CardContent>
         </Card>
@@ -97,7 +97,7 @@ const Dashboard: React.FC = () => {
                 {dashboardData.totalCustomers.increasing ? <TrendingUp className="mr-1 h-4 w-4" /> : <TrendingDown className="mr-1 h-4 w-4" />}
                 {dashboardData.totalCustomers.percentage}%
               </div>
-              <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">vs. mês anterior</span>
+              <span className="text-gray-500 text-xs ml-2">vs. mês anterior</span>
             </div>
           </CardContent>
         </Card>
@@ -114,7 +114,7 @@ const Dashboard: React.FC = () => {
                 {dashboardData.averageOrder.increasing ? <TrendingUp className="mr-1 h-4 w-4" /> : <TrendingDown className="mr-1 h-4 w-4" />}
                 {dashboardData.averageOrder.percentage}%
               </div>
-              <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">vs. mês anterior</span>
+              <span className="text-gray-500 text-xs ml-2">vs. mês anterior</span>
             </div>
           </CardContent>
         </Card>
@@ -129,8 +129,8 @@ const Dashboard: React.FC = () => {
             <CardDescription>Vendas dos últimos 7 dias</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-72 bg-gray-100 dark:bg-gray-800 rounded-md flex items-center justify-center">
-              <p className="text-gray-500 dark:text-gray-400">Visualização de gráfico de tendências</p>
+            <div className="h-72 bg-gray-100 rounded-md flex items-center justify-center">
+              <p className="text-gray-500">Visualização de gráfico de tendências</p>
               {/* Aqui você pode adicionar uma biblioteca de gráficos como Recharts ou Chart.js */}
             </div>
           </CardContent>
@@ -157,7 +157,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div>
                       <p className="font-medium text-sm line-clamp-1">{product.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{product.sales} vendas</p>
+                      <p className="text-xs text-gray-500">{product.sales} vendas</p>
                     </div>
                   </div>
                   <p className="text-sm font-medium">{product.revenue}</p>
@@ -178,7 +178,7 @@ const Dashboard: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
+                <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                   <th className="px-4 py-3">ID Pedido</th>
                   <th className="px-4 py-3">Cliente</th>
                   <th className="px-4 py-3">Data</th>
@@ -188,15 +188,15 @@ const Dashboard: React.FC = () => {
               </thead>
               <tbody>
                 {recentOrders.map((order) => (
-                  <tr key={order.id} className="border-b border-gray-200 dark:border-gray-700">
+                  <tr key={order.id} className="border-b border-gray-200">
                     <td className="px-4 py-3 text-sm font-medium">{order.id}</td>
                     <td className="px-4 py-3 text-sm">{order.customer}</td>
                     <td className="px-4 py-3 text-sm">{order.date}</td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        order.status === 'Entregue' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                        order.status === 'Em trânsito' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                        order.status === 'Entregue' ? 'bg-green-100 text-green-800' :
+                        order.status === 'Em trânsito' ? 'bg-blue-100 text-blue-800' :
+                        'bg-yellow-100 text-yellow-800'
                       }`}>
                         {order.status}
                       </span>
@@ -209,7 +209,7 @@ const Dashboard: React.FC = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <a href="#" className="text-sm text-green-600 dark:text-green-400 hover:underline">Ver todos os pedidos</a>
+          <a href="#" className="text-sm text-green-600 hover:underline">Ver todos os pedidos</a>
         </CardFooter>
       </Card>
     </div>

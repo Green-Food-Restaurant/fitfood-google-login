@@ -1,4 +1,4 @@
-# Configuração de Porta para o Frontend FitFood
+# Configuração de Porta para o Frontend Green Food
 
 ## Alterações Realizadas
 
@@ -17,7 +17,7 @@ Para resolver o conflito de portas no ambiente Coolify com Traefik, foram feitas
 ### Arquitetura
 
 ```
-Cliente → Traefik (Proxy Reverso) → Container FitFood (porta 3000)
+Cliente → Traefik (Proxy Reverso) → Container Green Food (porta 3000)
 ```
 
 ### Explicação
@@ -27,7 +27,7 @@ Cliente → Traefik (Proxy Reverso) → Container FitFood (porta 3000)
    - Escuta nas portas 80 (HTTP) e 443 (HTTPS) do host
    - Encaminha as solicitações para os containers apropriados com base em regras de roteamento
 
-2. **Container FitFood**:
+2. **Container Green Food**:
    - Agora escuta na porta 3000 internamente
    - Não expõe diretamente esta porta para o host
    - O Traefik encaminha o tráfego para esta porta interna

@@ -1,6 +1,6 @@
 # Configuração da Pipeline CI/CD
 
-Este documento descreve os secrets necessários para configurar a pipeline de CI/CD do frontend do FitFood.
+Este documento descreve os secrets necessários para configurar a pipeline de CI/CD do frontend do Green Food.
 
 ## Secrets Necessários
 

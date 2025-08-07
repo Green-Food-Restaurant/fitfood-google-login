@@ -263,7 +263,7 @@ const ProductsManagement: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Gerenciamento de Produtos</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Gerenciamento de Produtos</h1>
         
         <Button onClick={handleAddProduct} className="bg-green-600 hover:bg-green-700">
           <Plus className="mr-2 h-4 w-4" /> Adicionar Produto
@@ -291,7 +291,7 @@ const ProductsManagement: React.FC = () => {
                     setPagination(prev => ({ ...prev }));
                   }
                 }}
-                className={`pl-10 ${searchTerm ? 'border-green-500 dark:border-green-500' : ''}`}
+                className={`pl-10 ${searchTerm ? 'border-green-500' : ''}`}
               />
             </div>
             
@@ -299,7 +299,7 @@ const ProductsManagement: React.FC = () => {
                 value={selectedCategory}
                 onValueChange={setSelectedCategory}
               >
-                <SelectTrigger className={`w-[180px] ${selectedCategory !== 'all' ? 'border-green-500 dark:border-green-500' : ''}`}>
+                <SelectTrigger className={`w-[180px] ${selectedCategory !== 'all' ? 'border-green-500' : ''}`}>
                   <SelectValue placeholder="Categoria" />
                 </SelectTrigger>
                 <SelectContent>
@@ -337,9 +337,9 @@ const ProductsManagement: React.FC = () => {
             <div className="overflow-x-auto">
               {/* Indicador de filtro ativo */}
               {selectedCategory !== 'all' && (
-                <div className="mb-4 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md flex items-center">
+                <div className="mb-4 p-2 bg-green-50 border border-green-200 rounded-md flex items-center">
                   <Filter className="h-4 w-4 text-green-500 mr-2" />
-                  <span className="text-sm text-green-700 dark:text-green-400">
+                  <span className="text-sm text-green-700">
                     Filtrando por: {selectedCategory === 'LANCHE' ? 'Lanches' : 
                                   selectedCategory === 'BEBIDA' ? 'Bebidas' : 
                                   selectedCategory === 'SOBREMESA' ? 'Sobremesas' : 
@@ -349,7 +349,7 @@ const ProductsManagement: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="ml-auto text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40 p-1 h-auto"
+                    className="ml-auto text-green-700 hover:bg-green-100 p-1 h-auto"
                     onClick={() => {
                       setSelectedCategory('all');
                       // Recarregar a página atual
@@ -380,7 +380,7 @@ const ProductsManagement: React.FC = () => {
                   {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
                       <TableRow key={product.id}>                        <TableCell>
-                          <div className="w-10 h-10 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+                          <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
                             <img 
                               src={getProductImagePath(product)} 
                               alt={product.name}
@@ -395,11 +395,11 @@ const ProductsManagement: React.FC = () => {
                         <TableCell>
                           <div>
                             <p className="font-medium">{product.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{product.description}</p>
+                            <p className="text-xs text-gray-500 line-clamp-1">{product.description}</p>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                             {product.category}
                           </span>
                         </TableCell>
@@ -409,8 +409,8 @@ const ProductsManagement: React.FC = () => {
                             onClick={() => handleToggleStatus(product.id, product.active)}
                             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-colors ${
                               product.active 
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500 hover:bg-green-200' 
-                                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200'
+                                ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                             }`}
                           >
                             {product.active ? 'Ativo' : 'Inativo'}
@@ -430,7 +430,7 @@ const ProductsManagement: React.FC = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-10 text-gray-500 dark:text-gray-400">
+                      <TableCell colSpan={7} className="text-center py-10 text-gray-500">
                         Nenhum produto encontrado
                       </TableCell>
                     </TableRow>
@@ -441,7 +441,7 @@ const ProductsManagement: React.FC = () => {
           )}
             {/* Paginação */}
           <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-gray-500">
               Mostrando {Math.min(pagination.totalItems, 10)} de {pagination.totalItems} resultados
             </div>
             <div className="flex space-x-1">
@@ -548,7 +548,7 @@ const ProductsManagement: React.FC = () => {
                     onChange={(e) => setCurrentProduct(prev => prev ? {...prev, image: e.target.value} : null)} 
                   />
                   {currentProduct?.category && (
-                    <div className="h-10 w-10 rounded-md overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-700">
+                    <div className="h-10 w-10 rounded-md overflow-hidden flex-shrink-0 border border-gray-200">
                       <img 
                         src={currentProduct?.image || getPlaceholderByCategory(currentProduct.category)} 
                         alt="Preview" 

@@ -431,7 +431,7 @@ const UsersManagement: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Gerenciamento de Usuários</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Gerenciamento de Usuários</h1>
         
         <Button onClick={handleAddUser} className="bg-green-600 hover:bg-green-700">
           <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
@@ -498,7 +498,7 @@ const UsersManagement: React.FC = () => {
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-64 space-y-4">
-              <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/30 text-red-800 dark:text-red-300 max-w-md text-center">
+              <div className="bg-red-50 p-4 rounded-lg border border-red-100 text-red-800 max-w-md text-center">
                 <p className="font-bold mb-1">Erro ao carregar dados</p>
                 <p className="text-sm">{error}</p>
                 <Button 
@@ -541,8 +541,8 @@ const UsersManagement: React.FC = () => {
                             </Avatar>
                             <div>
                               <p className="font-medium">{user.firstName} {user.lastName}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                              <p className="text-xs text-gray-500">{user.email}</p>
+                              <p className="text-xs text-gray-500">
                                 {user.provider === 'email' ? 'Cadastro local' : `${user.provider}`}
                               </p>
                             </div>
@@ -551,23 +551,23 @@ const UsersManagement: React.FC = () => {
                         <TableCell>
                           <Badge className={
                             user.role.name === 'admin' 
-                              ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 hover:bg-purple-200' 
-                              : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                              ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' 
+                              : 'bg-gray-100 text-gray-800'
                           }>
                             {user.role.name.charAt(0).toUpperCase() + user.role.name.slice(1)}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">
-                            <Calendar className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
+                            <Calendar className="h-3 w-3 mr-1 text-gray-500" />
                             <span className="text-sm">{formatDate(user.createdAt)}</span>
                           </div>
                         </TableCell>                        <TableCell className="text-center">
                           <Badge
                             className={`
                               ${user.status.name === 'active' || user.status.name === 'Active'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-900'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-900'
+                                ? 'bg-green-100 text-green-800 border-green-200'
+                                : 'bg-red-100 text-red-800 border-red-200'
                               }
                               flex items-center justify-center gap-1 px-3 py-1 select-none
                             `}
@@ -621,7 +621,7 @@ const UsersManagement: React.FC = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-10 text-gray-500 dark:text-gray-400">
+                      <TableCell colSpan={5} className="text-center py-10 text-gray-500">
                         Nenhum usuário encontrado
                       </TableCell>
                     </TableRow>
@@ -633,7 +633,7 @@ const UsersManagement: React.FC = () => {
           
           {/* Paginação */}
           <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-gray-500">
               Mostrando {users.length} resultados
             </div>
             <Pagination>

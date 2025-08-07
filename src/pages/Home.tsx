@@ -74,7 +74,7 @@ const Home = () => {
   ];
   
   return (
-    <div className="min-h-screen bg-[#F9FDF7] dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F9FDF7] text-gray-800 overflow-x-hidden">
       <Navbar />
       
       <HeroSection scrollYProgress={scrollYProgress} />

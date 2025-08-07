@@ -1,6 +1,6 @@
-# Deploy do FitFood com Docker
+# Deploy do Green Food com Docker
 
-Este guia explica como realizar o deploy da aplicação FitFood usando Docker e Docker Compose.
+Este guia explica como realizar o deploy da aplicação Green Food usando Docker e Docker Compose.
 
 ## Pré-requisitos
 
@@ -53,13 +53,13 @@ Para ambientes de produção, recomendamos:
 
 ```bash
 # Build da imagem
-docker build -t fitfood-frontend:latest .
+docker build -t greenfood-frontend:latest .
 
 # Tag para o registry
-docker tag fitfood-frontend:latest seu-registry.com/fitfood-frontend:latest
+docker tag greenfood-frontend:latest seu-registry.com/greenfood-frontend:latest
 
 # Push para o registry
-docker push seu-registry.com/fitfood-frontend:latest
+docker push seu-registry.com/greenfood-frontend:latest
 ```
 
 ## Variáveis de Ambiente

@@ -167,17 +167,17 @@ const OrdersManagement: React.FC = () => {
   const getStatusColor = (status: Order['status']) => {
     switch (status) {
       case 'pendente':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500';
+        return 'bg-yellow-100 text-yellow-800';
       case 'preparando':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500';
+        return 'bg-blue-100 text-blue-800';
       case 'entregando':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-500';
+        return 'bg-purple-100 text-purple-800';
       case 'entregue':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500';
+        return 'bg-green-100 text-green-800';
       case 'cancelado':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500';
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -195,7 +195,7 @@ const OrdersManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Gerenciamento de Pedidos</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Gerenciamento de Pedidos</h1>
       
       <Card>
         <CardHeader className="pb-2">
@@ -277,13 +277,13 @@ const OrdersManagement: React.FC = () => {
                         <TableCell>
                           <div>
                             <p>{order.customerName}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{order.email}</p>
+                            <p className="text-xs text-gray-500">{order.email}</p>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
                             <p>{new Date(order.date).toLocaleDateString('pt-BR')}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(order.date).toLocaleTimeString('pt-BR')}</p>
+                            <p className="text-xs text-gray-500">{new Date(order.date).toLocaleTimeString('pt-BR')}</p>
                           </div>
                         </TableCell>
                         <TableCell className="text-right font-medium">R$ {order.total.toFixed(2)}</TableCell>
@@ -305,7 +305,7 @@ const OrdersManagement: React.FC = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-10 text-gray-500 dark:text-gray-400">
+                      <TableCell colSpan={6} className="text-center py-10 text-gray-500">
                         Nenhum pedido encontrado
                       </TableCell>
                     </TableRow>
@@ -317,7 +317,7 @@ const OrdersManagement: React.FC = () => {
           
           {/* Paginação */}
           <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-gray-500">
               Mostrando {Math.min(pagination.totalItems, filteredOrders.length)} de {pagination.totalItems} resultados
             </div>
             <div className="flex space-x-1">
@@ -348,7 +348,7 @@ const OrdersManagement: React.FC = () => {
             <div className="space-y-6">
               {/* Informações do cliente */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Informações do Cliente</h3>
+                <h3 className="text-sm font-medium text-gray-500">Informações do Cliente</h3>
                 <div className="mt-2 space-y-1">
                   <p className="font-medium">{selectedOrder.customerName}</p>
                   <p className="text-sm">{selectedOrder.email}</p>
@@ -358,30 +358,30 @@ const OrdersManagement: React.FC = () => {
               
               {/* Endereço de entrega */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Endereço de Entrega</h3>
+                <h3 className="text-sm font-medium text-gray-500">Endereço de Entrega</h3>
                 <p className="mt-2 text-sm">{selectedOrder.address}</p>
               </div>
               
               {/* Data e hora */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Data e Hora</h3>
+                <h3 className="text-sm font-medium text-gray-500">Data e Hora</h3>
                 <p className="mt-2 text-sm">{formatDate(selectedOrder.date)}</p>
               </div>
               
               {/* Itens do pedido */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Itens do Pedido</h3>
+                <h3 className="text-sm font-medium text-gray-500">Itens do Pedido</h3>
                 <div className="mt-2 border rounded-md overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-800">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Item</th>
-                        <th scope="col" className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Qtde</th>
-                        <th scope="col" className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Preço</th>
-                        <th scope="col" className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Subtotal</th>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                        <th scope="col" className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Qtde</th>
+                        <th scope="col" className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Preço</th>
+                        <th scope="col" className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                    <tbody className="bg-white divide-y divide-gray-200">
                       {selectedOrder.items.map((item) => (
                         <tr key={item.id}>
                           <td className="px-4 py-2 text-sm">{item.name}</td>
@@ -391,7 +391,7 @@ const OrdersManagement: React.FC = () => {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-gray-50 dark:bg-gray-800">
+                    <tfoot className="bg-gray-50">
                       <tr>
                         <td colSpan={3} className="px-4 py-2 text-sm font-medium text-right">Total</td>
                         <td className="px-4 py-2 text-sm font-bold text-right">R$ {selectedOrder.total.toFixed(2)}</td>
@@ -402,13 +402,13 @@ const OrdersManagement: React.FC = () => {
               </div>
               
               {/* Atualizar status */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Atualizar Status</h3>
+              <div className="pt-4 border-t border-gray-200">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Atualizar Status</h3>
                 <div className="flex flex-wrap gap-2">
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className={selectedOrder.status === 'pendente' ? 'bg-yellow-100 border-yellow-300 dark:bg-yellow-900/20 dark:border-yellow-800' : ''}
+                    className={selectedOrder.status === 'pendente' ? 'bg-yellow-100 border-yellow-300' : ''}
                     onClick={() => handleUpdateStatus(selectedOrder.id, 'pendente')}
                   >
                     Pendente
@@ -416,7 +416,7 @@ const OrdersManagement: React.FC = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className={selectedOrder.status === 'preparando' ? 'bg-blue-100 border-blue-300 dark:bg-blue-900/20 dark:border-blue-800' : ''}
+                    className={selectedOrder.status === 'preparando' ? 'bg-blue-100 border-blue-300' : ''}
                     onClick={() => handleUpdateStatus(selectedOrder.id, 'preparando')}
                   >
                     Em Preparo
@@ -424,7 +424,7 @@ const OrdersManagement: React.FC = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className={selectedOrder.status === 'entregando' ? 'bg-purple-100 border-purple-300 dark:bg-purple-900/20 dark:border-purple-800' : ''}
+                    className={selectedOrder.status === 'entregando' ? 'bg-purple-100 border-purple-300' : ''}
                     onClick={() => handleUpdateStatus(selectedOrder.id, 'entregando')}
                   >
                     Em Entrega
@@ -432,7 +432,7 @@ const OrdersManagement: React.FC = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className={selectedOrder.status === 'entregue' ? 'bg-green-100 border-green-300 dark:bg-green-900/20 dark:border-green-800' : ''}
+                    className={selectedOrder.status === 'entregue' ? 'bg-green-100 border-green-300' : ''}
                     onClick={() => handleUpdateStatus(selectedOrder.id, 'entregue')}
                   >
                     Entregue
@@ -440,7 +440,7 @@ const OrdersManagement: React.FC = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className={selectedOrder.status === 'cancelado' ? 'bg-red-100 border-red-300 dark:bg-red-900/20 dark:border-red-800' : ''}
+                    className={selectedOrder.status === 'cancelado' ? 'bg-red-100 border-red-300' : ''}
                     onClick={() => handleUpdateStatus(selectedOrder.id, 'cancelado')}
                   >
                     Cancelado

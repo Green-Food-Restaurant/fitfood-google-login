@@ -41,7 +41,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar de navegação */}
       <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 

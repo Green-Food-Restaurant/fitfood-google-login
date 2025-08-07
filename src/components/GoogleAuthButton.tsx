@@ -108,7 +108,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
         shape="pill"
         size="large"
         locale="pt-BR"
-        theme="filled_black"
+        theme="outline"
         logo_alignment="left"
         context="signin"
       />

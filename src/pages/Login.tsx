@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GoogleAuthButton from '@/components/GoogleAuthButton';
 import { useNavigate, useLocation } from 'react-router-dom';
-import ThemeToggle from '@/components/ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -48,11 +47,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden bg-gradient-to-br from-green-50 to-white dark:from-gray-900 dark:to-gray-800 relative">
-      {/* Theme Toggle Button - Fixed position */}
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden bg-gradient-to-br from-green-50 to-white relative">
       
       {/* Left side - Visuals and branding */}
       <motion.div 
@@ -64,7 +59,7 @@ const Login = () => {
         {/* Animated shapes */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div 
-            className="absolute -left-16 top-1/4 w-64 h-64 rounded-full bg-green-200/50 dark:bg-green-900/30 blur-xl"
+            className="absolute -left-16 top-1/4 w-64 h-64 rounded-full bg-green-200/50 blur-xl"
             animate={{ 
               scale: [1, 1.2, 1],
               x: [0, 20, 0],
@@ -77,7 +72,7 @@ const Login = () => {
             }}
           />
           <motion.div 
-            className="absolute right-20 bottom-1/3 w-80 h-80 rounded-full bg-green-100/60 dark:bg-green-800/20 blur-xl"
+            className="absolute right-20 bottom-1/3 w-80 h-80 rounded-full bg-green-100/60 blur-xl"
             animate={{ 
               scale: [1, 1.3, 1],
               x: [0, -30, 0],
@@ -90,7 +85,7 @@ const Login = () => {
             }}
           />
           <motion.div 
-            className="absolute left-1/3 bottom-1/4 w-72 h-72 rounded-full bg-green-300/40 dark:bg-green-700/20 blur-xl"
+            className="absolute left-1/3 bottom-1/4 w-72 h-72 rounded-full bg-green-300/40 blur-xl"
             animate={{ 
               scale: [1, 0.8, 1],
               y: [0, 25, 0]
@@ -123,7 +118,7 @@ const Login = () => {
           
           <div className="flex items-center gap-2 mb-8">
             <div className="h-1 w-6 bg-green-400 rounded-full"></div>
-            <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">Nutrição que transforma</p>
+            <p className="text-gray-600 text-lg font-medium">Nutrição que transforma</p>
             <div className="h-1 w-6 bg-green-400 rounded-full"></div>
           </div>
           
@@ -134,24 +129,24 @@ const Login = () => {
             animate="visible"
           >
             <motion.div variants={itemVariants} className="flex items-center gap-3 justify-center">
-              <div className="bg-green-100 dark:bg-green-900/50 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 dark:text-green-400"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+              <div className="bg-green-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">Refeições personalizadas para seus objetivos</p>
+              <p className="text-gray-600 font-medium">Refeições personalizadas para seus objetivos</p>
             </motion.div>
             
             <motion.div variants={itemVariants} className="flex items-center gap-3 justify-center">
-              <div className="bg-green-100 dark:bg-green-900/50 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 dark:text-green-400"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+              <div className="bg-green-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">Acompanhamento nutricional completo</p>
+              <p className="text-gray-600 font-medium">Acompanhamento nutricional completo</p>
             </motion.div>
             
             <motion.div variants={itemVariants} className="flex items-center gap-3 justify-center">
-              <div className="bg-green-100 dark:bg-green-900/50 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 dark:text-green-400"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+              <div className="bg-green-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">Receitas exclusivas de chefs profissionais</p>
+              <p className="text-gray-600 font-medium">Receitas exclusivas de chefs profissionais</p>
             </motion.div>
           </motion.div>
         </motion.div>
@@ -167,13 +162,13 @@ const Login = () => {
         {/* Mobile logo - Visible apenas em mobile */}
         <div className="absolute top-4 left-4 md:hidden">
           <div className="flex items-center gap-2">
-            <div className="bg-green-100 dark:bg-gray-800 p-2 rounded-full shadow">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 dark:text-green-400">
+            <div className="bg-green-100 p-2 rounded-full shadow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
                 <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/>
                 <path d="M10 2c1 .5 2 2 2 5"/>
               </svg>
             </div>
-            <span className="text-lg font-semibold text-green-600 dark:text-green-400">Green Food</span>
+            <span className="text-lg font-semibold text-green-600">Green Food</span>
           </div>
         </div>
         
@@ -183,10 +178,10 @@ const Login = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Card className="border-0 shadow-2xl dark:shadow-green-900/20 bg-white/80 backdrop-blur-sm dark:bg-gray-800/90 dark:border-gray-700 overflow-hidden">
+          <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -right-16 -bottom-16 w-32 h-32 rounded-full bg-green-100 dark:bg-green-900/20 blur-md"></div>
-              <div className="absolute -left-16 -top-16 w-32 h-32 rounded-full bg-green-50 dark:bg-green-900/10 blur-md"></div>
+              <div className="absolute -right-16 -bottom-16 w-32 h-32 rounded-full bg-green-100 blur-md"></div>
+              <div className="absolute -left-16 -top-16 w-32 h-32 rounded-full bg-green-50 blur-md"></div>
             </div>
             
             <CardHeader className="relative z-10 space-y-2 text-center pb-6">
@@ -198,8 +193,8 @@ const Login = () => {
                   </svg>
                 </div>
               </div>
-              <CardTitle className="text-3xl font-bold dark:text-white">Bem-vindo</CardTitle>
-              <p className="text-gray-500 dark:text-gray-400">
+              <CardTitle className="text-3xl font-bold">Bem-vindo</CardTitle>
+              <p className="text-gray-500">
                 Acesse sua conta para continuar
               </p>
             </CardHeader>
@@ -223,14 +218,14 @@ const Login = () => {
                   />
                   <Label 
                     htmlFor="rememberMe" 
-                    className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer"
+                    className="text-sm text-gray-600 cursor-pointer"
                   >
                     Lembrar-me
                   </Label>
                 </div>
                 
                 <div className="text-center">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-500">
                     Acesso seguro e protegido
                   </span>
                 </div>
@@ -238,7 +233,7 @@ const Login = () => {
                 {loading && (
                   <div className="my-4 flex justify-center items-center space-x-2">
                     <div className="w-5 h-5 rounded-full border-2 border-green-500 border-t-transparent animate-spin"></div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Autenticando...</span>
+                    <span className="text-sm text-gray-600">Autenticando...</span>
                   </div>
                 )}
                 
@@ -252,7 +247,7 @@ const Login = () => {
                     {[1, 2, 3].map((index) => (
                       <motion.div
                         key={index}
-                        className="w-2 h-2 rounded-full bg-green-500 dark:bg-green-400"
+                        className="w-2 h-2 rounded-full bg-green-500"
                         animate={{
                           scale: [1, 1.5, 1],
                           opacity: [0.7, 1, 0.7],

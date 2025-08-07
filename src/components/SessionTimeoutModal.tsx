@@ -164,11 +164,11 @@ const SessionTimeoutModal: React.FC = () => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="flex items-center space-x-2">
-          <div className="flex-shrink-0 p-1.5 bg-amber-100 dark:bg-amber-900 rounded-full">
-            <FiAlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          <div className="flex-shrink-0 p-1.5 bg-amber-100 rounded-full">
+            <FiAlertTriangle className="h-5 w-5 text-amber-600" />
           </div>
           <div>
-            <DialogTitle className="text-amber-600 dark:text-amber-400">
+            <DialogTitle className="text-amber-600">
               Sessão prestes a expirar
             </DialogTitle>
             <DialogDescription>
@@ -183,19 +183,19 @@ const SessionTimeoutModal: React.FC = () => {
               <FiClock className="text-gray-400" />
               <span>Tempo restante:</span>
             </div>
-            <div className="font-mono font-bold text-amber-600 dark:text-amber-400">
+            <div className="font-mono font-bold text-amber-600">
               {`${Math.floor(countdown / 60)}:${(countdown % 60).toString().padStart(2, '0')}`}
             </div>
           </div>
 
-          <div className="w-full bg-gray-200 dark:bg-gray-700 h-2.5 rounded-full overflow-hidden">
+          <div className="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
             <div 
               className="bg-amber-500 h-2.5 rounded-full transition-all duration-1000" 
               style={{ width: `${(countdown / 60) * 100}%` }}
             />
           </div>
           
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600">
             O que você deseja fazer antes que sua sessão expire?
           </p>
         </div>

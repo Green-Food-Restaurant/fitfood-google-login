@@ -105,7 +105,7 @@ const Checkout = () => {
       <header className="bg-white shadow-md">
         <div className="container mx-auto flex items-center justify-between py-4 px-6">
           <div className="flex items-center">
-            <span className="text-2xl font-bold text-green-600">FitFood</span>
+            <span className="text-2xl font-bold text-green-600">Green Food</span>
             <span className="ml-2 text-sm text-green-400 italic">Nutrição que transforma</span>
           </div>
           <button onClick={() => navigate(-1)} className="hover:text-green-600 transition-colors">
@@ -201,7 +201,7 @@ const Checkout = () => {
       
       <footer className="bg-white mt-16 py-6">
         <div className="container mx-auto text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} FitFood. Sua jornada para uma alimentação mais saudável começa aqui.
+          © {new Date().getFullYear()} Green Food. Sua jornada para uma alimentação mais saudável começa aqui.
         </div>
       </footer>
     </div>

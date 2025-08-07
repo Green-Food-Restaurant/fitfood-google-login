@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Bell, Search, Menu, X } from 'lucide-react';
-import ThemeToggle from '@/components/ThemeToggle';
 
 type AdminHeaderProps = {
   toggleMobileSidebar?: () => void;
@@ -12,7 +11,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleMobileSidebar }) => {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
-    <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between px-4 md:px-6">
+    <header className="h-16 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 md:px-6">
       {/* Botão do menu mobile */}
       <div className="flex items-center md:hidden">
         <Button 
@@ -27,16 +26,16 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleMobileSidebar }) => {
       
       {/* Título da seção (visível apenas em desktop) */}
       <div className="hidden md:block">
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Painel Administrativo</h1>
+        <h1 className="text-xl font-semibold text-gray-800">Painel Administrativo</h1>
       </div>
       
       {/* Barra de busca */}
-      <div className={`${showSearch ? 'flex absolute left-0 right-0 top-0 px-4 h-16 bg-white dark:bg-gray-800 z-10 items-center border-b border-gray-200 dark:border-gray-700' : 'hidden md:flex'} flex-1 max-w-md mx-4`}>
+      <div className={`${showSearch ? 'flex absolute left-0 right-0 top-0 px-4 h-16 bg-white z-10 items-center border-b border-gray-200' : 'hidden md:flex'} flex-1 max-w-md mx-4`}>
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input 
             placeholder="Buscar..." 
-            className="pl-10 pr-4 py-2 w-full bg-gray-100 dark:bg-gray-700 focus:ring-green-500"
+            className="pl-10 pr-4 py-2 w-full bg-gray-100 focus:ring-green-500"
           />
           {showSearch && (
             <Button 
@@ -68,9 +67,6 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleMobileSidebar }) => {
           <Bell className="h-5 w-5" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </Button>
-        
-        {/* Alternador de tema */}
-        <ThemeToggle />
         
         {/* Avatar do usuário */}
         <Button variant="ghost" size="icon" className="rounded-full">

@@ -21,7 +21,7 @@ const CTASection = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
         >
-          Junte-se a milhares de pessoas que já transformaram sua alimentação com o FitFood. O primeiro pedido tem 15% de desconto!
+          Junte-se a milhares de pessoas que já transformaram sua alimentação com o Green Food. O primeiro pedido tem 15% de desconto!
         </motion.p>
         <motion.div
           whileHover={{ scale: 1.05 }}
