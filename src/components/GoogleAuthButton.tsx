@@ -99,19 +99,58 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ rememberMe = false 
   };
 
   return (
-    <GoogleLogin
-      onSuccess={handleLoginSuccess}
-      onError={handleLoginError}
-      useOneTap={true}
-      text="continue_with"
-      shape="pill"
-      size="large"
-      locale="pt-BR"
-      theme="filled_black"
-      width="100%"
-      logo_alignment="left"
-      context="signin"
-    />
+    <div className="google-login-wrapper" style={{ width: '60%' }}>
+      <style>{`
+        .google-login-wrapper [data-testid="google-login"],
+        .google-login-wrapper .google-signin-button,
+        .google-login-wrapper div[role="button"] {
+          width: 100% !important;
+          border: none !important;
+          border-radius: 25px !important;
+          background: #1f1f1f !important;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        
+        .google-login-wrapper iframe {
+          width: 100% !important;
+          border: none !important;
+          border-radius: 25px !important;
+          outline: none !important;
+        }
+        
+        /* Remove bordas brancas específicas do Google Sign-In */
+        .google-login-wrapper .gsi-material-button {
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        
+        .google-login-wrapper .gsi-material-button:focus,
+        .google-login-wrapper .gsi-material-button:hover {
+          outline: none !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+        
+        /* Força o estilo do container do botão */
+        .google-login-wrapper > div {
+          width: 100% !important;
+        }
+      `}</style>
+      <GoogleLogin
+        onSuccess={handleLoginSuccess}
+        onError={handleLoginError}
+        useOneTap={true}
+        text="continue_with"
+        shape="pill"
+        size="large"
+        locale="pt-BR"
+        theme="filled_black"
+        logo_alignment="left"
+        context="signin"
+      />
+    </div>
   );
 };
 
